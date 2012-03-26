@@ -31,7 +31,8 @@ module ViennaRna
     
     def run_with_hooks(flags = {})
       pre_run_check
-      run_without_hooks
+      response = run_without_hooks
+      self.class.method_defined?(:post_process) ? post_process(response) : response  
     end
     
     def pre_run_check
