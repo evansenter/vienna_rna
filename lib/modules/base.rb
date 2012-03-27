@@ -25,13 +25,16 @@ module ViennaRna
       @exec_name || "rna#{self.class.name.split('::').last.underscore}"
     end
     
-    def initialize(fasta)
-      @fasta = fasta
+    def initialize(data)
+      @fasta = case data
+      when Bio::FastaFormat then data
+      when String           then Bio::FastaFormat.new(data.split(/\n/).length > 1 ? data : ">\n%s" % data)
+      end
     end
     
     def run_with_hooks(flags = {})
       pre_run_check
-      response = run_without_hooks
+      response = run_without_hooks(flags)
       self.class.method_defined?(:post_process) ? post_process(response) : response  
     end
     
@@ -42,7 +45,7 @@ module ViennaRna
     end
     
     def stringify_flags(flags)
-      flags.inject("") { |string, flag| (string + (" %s %s" % flag)).strip }
+      flags.inject("") { |string, flag| (string + (" -%s %s" % flag)).strip }
     end
     
     def run(flags = {})
