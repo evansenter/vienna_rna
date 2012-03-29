@@ -17,15 +17,34 @@ module ViennaRna
       def exec_exists?(name)
         !%x[which rna#{name.to_s.downcase}].empty?
       end
+      
+      def run(data, flags = {})
+        new(data).run(flags)
+      end
+      
+      def batch(fastas = [])
+        ViennaRna::Batch.new(self, fastas).tap do |batch|
+          if const_defined?(:Batch)
+            @@me = self
+            
+            batch.singleton_class.class_eval { include @@me.const_get(:Batch) }
+          end
+        end
+      end
     end
     
-    attr_reader :fasta
+    attr_reader :fasta, :response
     
     def exec_name
       @exec_name || "rna#{self.class.name.split('::').last.underscore}"
     end
     
+    def exec_sequence_format
+      fasta.seq
+    end
+    
     def initialize(data)
+      # Doesn't support structures on the third line yet.
       @fasta = case data
       when Bio::FastaFormat then data
       when String           then Bio::FastaFormat.new(data.split(/\n/).length > 1 ? data : ">\n%s" % data)
@@ -33,9 +52,11 @@ module ViennaRna
     end
     
     def run_with_hooks(flags = {})
-      pre_run_check
-      response = run_without_hooks(flags)
-      self.class.method_defined?(:post_process) ? post_process(response) : response  
+      tap do
+        pre_run_check
+        @response = run_without_hooks(flags)
+        post_process(response) if respond_to?(:post_process)
+      end
     end
     
     def pre_run_check
@@ -49,7 +70,7 @@ module ViennaRna
     end
     
     def run(flags = {})
-      %x[echo #{fasta.seq} | #{exec_name} #{stringify_flags(flags)}]
+      %x[echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}]
     end
   end
 end

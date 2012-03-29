@@ -3,9 +3,7 @@ module ViennaRna
     attr_reader :structures
     
     def post_process(response)
-      tap do
-        @structures = response.split(/\n/)
-      end
+      @structures = response.split(/\n/)
     end
     
     def bin(count = 1)

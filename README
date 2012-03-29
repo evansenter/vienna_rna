@@ -3,10 +3,9 @@ A simple gem for facilitating bindings to the ViennaRNA package (http://www.tbi.
 Simple use case:
 ruby-1.9.3-p125 :001 > require "vienna_rna"
  => true 
-ruby-1.9.3-p125 :002 > fasta = Bio::FastaFormat.new(">Toy\nGGGGGCCCCC")
- => >Toy
-GGGGGCCCCC
- 
-ruby-1.9.3-p125 :003 > print ViennaRna::Fold.new(fasta).run
-GGGGGCCCCC
-(((....))) ( -3.90)
+ruby-1.9.3-p125 :002 > rna = ViennaRna::Fold.run("CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG")
+ => #<ViennaRna::Fold:0x007f9c48839dc0>
+ruby-1.9.3-p125 :003 > rna.structure
+ => "((((..(((...(((....))).)))..))))" 
+ruby-1.9.3-p125 :004 > rna.mfe
+ => -19.7
