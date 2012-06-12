@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name        = "vienna_rna"
-  spec.version     = "0.0.3"
+  spec.version     = "0.0.4"
   spec.date        = "2012-03-26"
   spec.summary     = "Bindings to the Vienna RNA package."
   spec.description = "A Ruby API for interacting with the Vienna RNA package."
@@ -10,5 +10,5 @@ Gem::Specification.new do |spec|
   spec.homepage    = "http://rubygems.org/gems/vienna_rna"
   
   spec.add_dependency("bio")
-  spec.add_dependency("active_support")
+  spec.add_dependency("activesupport", [">= 3.2.5"])
 end

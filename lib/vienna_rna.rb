@@ -1,7 +1,7 @@
 require "bio"
 require "active_support/inflector"
 require "active_support/core_ext/class"
-require "active_support/core_ext/module"
+require "active_support/core_ext/module/aliasing"
 
 # Clean up this include order.
 Dir[File.join(File.dirname(__FILE__), "/modules/*")].each do |file|

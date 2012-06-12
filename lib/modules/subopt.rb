@@ -2,8 +2,8 @@ module ViennaRna
   class Subopt < Base
     attr_reader :structures
     
-    def post_process(response)
-      @structures = response.split(/\n/)
+    def post_process
+      @structures = @response.split(/\n/)
     end
     
     def bin(count = 1)

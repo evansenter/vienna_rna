@@ -1,6 +1,6 @@
 module ViennaRna
   class Base
-    class_inheritable_accessor :exec_name
+    class_attribute :executable_name
     
     class << self
       def method_added(name)
@@ -36,7 +36,7 @@ module ViennaRna
     attr_reader :fasta, :response
     
     def exec_name
-      @exec_name || "rna#{self.class.name.split('::').last.underscore}"
+      executable_name || "rna#{self.class.name.split('::').last.underscore}"
     end
     
     def exec_sequence_format
@@ -53,9 +53,9 @@ module ViennaRna
     
     def run_with_hooks(flags = {})
       tap do
-        pre_run_check
+        pre_run_check unless respond_to?(:run_command)
         @response = run_without_hooks(flags)
-        post_process(response) if respond_to?(:post_process)
+        post_process if respond_to?(:post_process)
       end
     end
     
@@ -66,11 +66,15 @@ module ViennaRna
     end
     
     def stringify_flags(flags)
-      flags.inject("") { |string, flag| (string + (" -%s %s" % flag)).strip }
+      flags.inject("") { |string, (flag, value)| (string + (value == :empty ? " -%s" % flag : " -%s %s" % [flag, value])).strip }
     end
     
     def run(flags = {})
-      %x[echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}]
+      if respond_to?(:run_command)
+        %x[#{method(:run_command).arity.zero? ? run_command : run_command(flags)}]
+      else
+        %x[echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}]
+      end
     end
   end
 end
