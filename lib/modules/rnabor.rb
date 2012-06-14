@@ -4,6 +4,10 @@ module ViennaRna
       "./RNAbor -s %s -c %s" % [fasta.seq, flags[:scaling_factor]]
     end
     
+    def parse_total_count
+      response.split(/\n/).find { |line| line =~ /^Z\[\d+\]\[1\]:/ }.match(/^Z\[\d+\]\[1\]:\s*(.*)/)[1].to_i
+    end
+    
     def parse_points
       self.class.parse(response, "ROOTS AND SOLUTIONS") { |line| line.strip.split(/\s\s+/).map { |value| eval("Complex(#{value})") } }
     end
