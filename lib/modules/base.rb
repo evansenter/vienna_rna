@@ -70,11 +70,15 @@ module ViennaRna
     end
     
     def run(flags = {})
-      if respond_to?(:run_command)
-        %x[#{method(:run_command).arity.zero? ? run_command : run_command(flags)}]
+      command = if respond_to?(:run_command)
+        method(:run_command).arity.zero? ? run_command : run_command(flags)
       else
-        %x[echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}]
+        "echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}"
       end
+      
+      puts command if ViennaRna.debug
+        
+      %x[#{command}]
     end
   end
 end
