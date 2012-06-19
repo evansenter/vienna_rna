@@ -1,5 +1,26 @@
+require "benchmark"
+
 module ViennaRna
   class Base
+    class Rna
+      attr_reader :sequence, :structure
+      
+      def initialize(sequence, structure = nil)
+        @sequence  = sequence
+        @structure = structure
+      end
+
+      alias :seq :sequence
+      
+      def safe_structure
+        structure || empty_structure
+      end
+      
+      def empty_structure
+        "." * seq.length
+      end
+    end
+    
     class_attribute :executable_name
     
     class << self
@@ -33,29 +54,33 @@ module ViennaRna
       end
     end
     
-    attr_reader :fasta, :response
+    attr_reader :data, :response, :runtime
     
     def exec_name
       executable_name || "rna#{self.class.name.split('::').last.underscore}"
     end
     
     def exec_sequence_format
-      fasta.seq
+      data.seq
     end
     
     def initialize(data)
-      # Doesn't support structures on the third line yet.
-      @fasta = case data
+      @data = case data
       when Bio::FastaFormat then data
-      when String           then Bio::FastaFormat.new(data.split(/\n/).length > 1 ? data : ">\n%s" % data)
+      when String           then Rna.new(data)
+      when Hash             then Rna.new(data[:sequence] || data[:seq], data[:structure] || data[:str])
       end
     end
     
     def run_with_hooks(flags = {})
       tap do
-        pre_run_check unless respond_to?(:run_command)
-        @response = run_without_hooks(flags)
-        post_process if respond_to?(:post_process)
+        @runtime = Benchmark.measure do
+          pre_run_check unless respond_to?(:run_command)
+          @response = run_without_hooks(flags)
+          post_process if respond_to?(:post_process)
+        end
+        
+        puts "Total runtime: %.3f sec." % runtime.real if ViennaRna.debug
       end
     end
     

@@ -1,45 +1,38 @@
+require "tempfile"
+
 module ViennaRna
   class Rnabor < Base
     def run_command(flags)
-      "./RNAbor -s %s -c %s" % [fasta.seq, flags[:scaling_factor] || 1]
+      file = Tempfile.new("rna")
+      file.write("%s\n" % data.seq)
+      file.write("%s\n" % data.safe_structure)
+      file.close
+      
+      "./RNAbor %s" % file.path
+    end
+    
+    def parse_partition
+      parse_non_zero_shells.sum
     end
     
     def parse_total_count
-      response.split(/\n/).find { |line| line =~ /^Z\[\d+\]\[1\]:/ }.match(/^Z\[\d+\]\[1\]:\s*(.*)/)[1].to_i
-    end
-    
-    def parse_points
-      self.class.parse(response, "ROOTS AND SOLUTIONS") { |line| line.strip.split(/\s\s+/).map { |value| eval("Complex(#{value})") } }
+      parse_counts.sum
     end
     
     def parse_counts
-      self.class.parse(response, "UNSCALED SUM") { |line| line.strip.split(/:\s*/).map(&:to_f) }
+      (non_zero_counts = self.class.parse(response).map { |row| row[2].to_i }) + [0] * (data.seq.length - non_zero_counts.length + 1)
     end
     
-    def in_r(options = {})
-      results = solve_in_r(options).processed_response
-      
-      options[:unscale] ? results.map { |i| i * parse_total_count } : results
+    def parse_distribution
+      (non_zero_distribution = parse_non_zero_shells.map { |i| i / parse_partition }) + [0.0] * (data.seq.length - non_zero_distribution.length + 1)
     end
     
-    def solve_in_r(options = {})
-      options = { precision: 0, unscale: false }.merge(options)
-      
-      run unless response
-      
-      ViennaRna::FftInR.new(parse_points.map(&:last), parse_total_count, options[:precision]).run
+    def parse_non_zero_shells
+      self.class.parse(response).map { |row| row[1].to_f }
     end
     
-    def self.parse(response, delimiter)
-      response.split(/\n/).reject do |line| 
-        line.empty?
-      end.drop_while do |line|
-        line !~ /^START #{delimiter}/i
-      end.reverse.drop_while do |line|
-        line !~ /^END #{delimiter}/i
-      end.reverse[1..-2].map do |line|
-        yield line
-      end
+    def self.parse(response)
+      response.split(/\n/)[2..-1].map { |line| line.split(/\t/) }
     end
   end
 end

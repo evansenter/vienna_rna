@@ -1,5 +1,3 @@
-# "/Users/evansenter/Source/mirna_5.1/hairpin.fa"
-
 module ViennaRna
   module Utils
     class << self

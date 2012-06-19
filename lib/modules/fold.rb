@@ -5,8 +5,8 @@ module ViennaRna
     def post_process
       structure = @response.split(/\n/).last.gsub(/ \(\s*(-?\d*\.\d*)\)$/, "")
       
-      unless fasta.seq.length == structure.length
-        raise "Sequence: '#{fasta.seq}'\nStructure: '#{structure}'"
+      unless data.seq.length == structure.length
+        raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
       else
         @structure, @mfe = structure, $1.to_f
       end

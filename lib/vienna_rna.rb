@@ -10,12 +10,12 @@ end
 
 module Enumerable
   def sum
-    inject { |sum, i| sum + i }
+    inject(&:+)
   end
 end
 
 module ViennaRna
-  @debug = false
+  @debug = true
   
   def self.const_missing(name)
     if Base.exec_exists?(name)
