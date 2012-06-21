@@ -5,7 +5,7 @@ module ViennaRna
     def run_command(flags)
       @flags = flags
       
-      "./FFTbor -s %s -r %s -c %s -p %s" % [
+      "./FFTbor -s %s -r \"%s\" -c %s -p %s" % [
         data.seq, 
         data.safe_structure,
         flags[:scaling_factor] ||= 1,
