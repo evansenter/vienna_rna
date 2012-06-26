@@ -61,7 +61,11 @@ module ViennaRna
     attr_reader :data, :response, :runtime
     
     def exec_name
-      executable_name || "rna#{self.class.name.split('::').last.underscore}"
+      if executable_name
+        executable_name.respond_to?(:call) ? self.class.module_exec(&executable_name) : executable_name
+      else
+        "rna#{self.class.name.split('::').last.underscore}"
+      end
     end
     
     def exec_sequence_format

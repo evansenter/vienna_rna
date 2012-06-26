@@ -1,20 +1,11 @@
 require "tempfile"
+require "bigdecimal"
 
 module ViennaRna
-  class Fftbor < Base
-    def run_command(flags)
-      file = Tempfile.new("rna")
-      file.write("%s\n" % data.seq)
-      file.write("%s\n" % data.safe_structure)
-      file.close
-      
-      "./FFTbor %s" % file.path
-    end
-    
+  class Fftbor < Xbor
     def partition
-      # Scaling factor (Z{1, n}): 586.684
       response.split(/\n/).find { |line| line =~ /^Scaling factor.*:\s+(\d+\.\d+)/ }
-      $1.to_f
+      BigDecimal.new($1)
     end
     
     def total_count
@@ -23,11 +14,7 @@ module ViennaRna
     end
     
     def distribution
-      self.class.parse(response).map { |row| row[1].to_f }
-    end
-    
-    def self.parse(response)
-      response.split(/\n/).select { |line| line =~ /^\d+\t\d+(\.\d+)?/ }.map { |line| line.split(/\t/) }
+      self.class.parse(response).map { |row| BigDecimal.new(row[1]) }
     end
   end
 end
