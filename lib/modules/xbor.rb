@@ -15,7 +15,7 @@ module ViennaRna
     end
     
     def self.parse(response)
-      response.split(/\n/).select { |line| line =~ /^\d+\t\d+/ }.map { |line| line.split(/\t/) }
+      response.split(/\n/).select { |line| line =~ /^\d+\t-?\d+/ }.map { |line| line.split(/\t/) }
     end
   end
 end
