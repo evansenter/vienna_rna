@@ -3,7 +3,7 @@ A simple gem for facilitating bindings to the ViennaRNA package (http://www.tbi.
 Simple use case:
 ruby-1.9.3-p125 :001 > require "vienna_rna"
  => true 
-ruby-1.9.3-p125 :002 > rna = ViennaRna::Fold.run("CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG")
+ruby-1.9.3-p125 :002 > rna = ViennaRna::Fold.run(seq: "CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG")
  => #<ViennaRna::Fold:0x007f9c48839dc0>
 ruby-1.9.3-p125 :003 > rna.structure
  => "((((..(((...(((....))).)))..))))" 
