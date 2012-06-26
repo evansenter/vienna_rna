@@ -54,7 +54,7 @@ module ViennaRna
       end
       
       def debugger
-        puts yield if ViennaRna.debug
+        STDERR.puts yield if ViennaRna.debug
       end
     end
     
