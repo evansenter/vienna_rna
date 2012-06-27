@@ -12,7 +12,7 @@ module ViennaRna
     end
     
     def counts
-      (non_zero_counts = self.class.parse(response).map { |row| row[2].to_i }) + [0] * (data.seq.length - non_zero_counts.length + 1)
+      (non_zero_counts = self.class.parse(response).map { |row| BigDecimal.new(row[2]).to_i }) + [0] * (data.seq.length - non_zero_counts.length + 1)
     end
     
     def distribution(options = {})
