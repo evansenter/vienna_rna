@@ -1,5 +1,6 @@
 require "tempfile"
 require "bigdecimal"
+require "diverge"
 
 module ViennaRna
   class Fftbor < Xbor
@@ -35,6 +36,15 @@ module ViennaRna
     
     def distribution
       self.class.parse(response).map { |row| BigDecimal.new(row[1]) }
+    end
+    
+    def compare
+      {
+        dispatch:   self.class.new(data).run(mode: :dispatch).distribution,
+        standalone: self.class.new(data).run(mode: :standalone).distribution
+      }.tap do |hash|
+        hash[:tvd] = Diverge.new(hash[:dispatch], hash[:standalone]).tvd
+      end
     end
   end
 end

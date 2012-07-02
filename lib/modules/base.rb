@@ -75,6 +75,7 @@ module ViennaRna
     def initialize(data)
       @data = case data
       when Bio::FastaFormat then data
+      when Rna              then data
       when String           then Rna.new(data)
       when Hash             then Rna.new(data[:sequence] || data[:seq], data[:structure] || data[:str])
       end
