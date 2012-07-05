@@ -107,7 +107,7 @@ module ViennaRna
       command = if respond_to?(:run_command)
         method(:run_command).arity.zero? ? run_command : run_command(flags)
       else
-        "echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}"
+        "echo #{exec_sequence_format} | #{exec_name} --noPS #{stringify_flags(flags)}"
       end
       
       debugger { command }

@@ -1,3 +1,6 @@
+require "matrix"
+require "gnuplot"
+
 module ViennaRna
   module Utils
     class << self
@@ -18,6 +21,34 @@ module ViennaRna
             end
           else
             puts "Warning: file '#{path}' exists. Skipping."
+          end
+        end
+      end
+
+      def regress(x, y, degree)
+        x_data   = x.map { |i| (0..degree).map { |power| i ** power.to_f } }
+        x_matrix = Matrix[*x_data]
+        y_matrix = Matrix.column_vector(y)
+
+        ((x_matrix.transpose * x_matrix).inverse * x_matrix.transpose * y_matrix).transpose.to_a[0]
+      end
+      
+      def plot(data, options = {})
+        options = { title: "Title", x_label: "X Axis", y_label: "Y Axis" }.merge(options)
+        
+        Gnuplot.open do |gnuplot|
+          Gnuplot::Plot.new(gnuplot) do |plot|
+
+            plot.title(options[:title])
+            plot.xlabel(options[:x_label])
+            plot.ylabel(options[:y_label])
+
+            plot.data = data.map do |data_hash|
+              Gnuplot::DataSet.new([data_hash[:x], data_hash[:y]]) do |dataset|
+                dataset.with = "points"
+                data_hash[:title] ? dataset.title = data_hash[:title] : dataset.notitle
+              end
+            end
           end
         end
       end
