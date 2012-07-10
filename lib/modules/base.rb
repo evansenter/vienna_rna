@@ -12,8 +12,8 @@ module ViennaRna
 
       alias :seq :sequence
       
-      def safe_structure
-        structure || empty_structure
+      def safe_structure(options = {})
+        options[:mfe] ? ViennaRna::Fold.run(seq).structure : structure || empty_structure
       end
       
       def empty_structure

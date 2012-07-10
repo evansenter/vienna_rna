@@ -5,8 +5,8 @@ require "diverge"
 module ViennaRna
   class Fftbor < Xbor
     MODES = {
-      dispatch:   "TripletPF",
-      standalone: "Fftbor"
+      dispatch:   "RNAcentral",
+      standalone: "FFTbor"
     }
     
     def run_command(flags = {})
@@ -20,7 +20,7 @@ module ViennaRna
       when :standalone then
         super(flags)
       when :dispatch then
-        "./%s -m 6 -tr 0 -s %s -ss '%s'" % [MODES[flags[:mode]], data.seq, data.safe_structure]
+        "%s -m 6 -tr 0 -s %s -ss '%s'" % [MODES[flags[:mode]], data.seq, data.safe_structure(flags)]
       end
     end
     
