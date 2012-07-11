@@ -8,10 +8,10 @@ module ViennaRna
     def run_command(flags)
       file = Tempfile.new("rna")
       file.write("%s\n" % data.seq)
-      file.write("%s\n" % data.safe_structure(flags))
+      file.write("%s\n" % data.safe_structure)
       file.close
       
-      "%s -nodangle %s" % [exec_name, file.path]
+      "%s -nodangle -E /usr/local/bin/energy.par %s" % [exec_name, file.path]
     end
     
     def self.parse(response)

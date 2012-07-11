@@ -7,13 +7,13 @@ module ViennaRna
       
       def initialize(sequence, structure = nil)
         @sequence  = sequence
-        @structure = structure
+        @structure = (structure == :mfe ? ViennaRna::Fold.run(seq).structure : structure)
       end
 
       alias :seq :sequence
       
-      def safe_structure(options = {})
-        options[:mfe] ? ViennaRna::Fold.run(seq).structure : structure || empty_structure
+      def safe_structure
+        structure || empty_structure
       end
       
       def empty_structure
@@ -107,7 +107,7 @@ module ViennaRna
       command = if respond_to?(:run_command)
         method(:run_command).arity.zero? ? run_command : run_command(flags)
       else
-        "echo #{exec_sequence_format} | #{exec_name} --noPS #{stringify_flags(flags)}"
+        "echo #{exec_sequence_format} | #{exec_name} -noPS #{stringify_flags(flags)}"
       end
       
       debugger { command }

@@ -10,7 +10,7 @@ module ViennaRna
     }
     
     def run_command(flags = {})
-      flags = { mode: :dispatch }.merge(flags)
+      flags = { mode: :standalone }.merge(flags)
       
       unless MODES[flags[:mode]]
         STDERR.puts "ERROR: The mode requested (%s) is not available" % flags[:mode]
@@ -20,7 +20,7 @@ module ViennaRna
       when :standalone then
         super(flags)
       when :dispatch then
-        "%s -m 6 -tr 0 -s %s -ss '%s'" % [MODES[flags[:mode]], data.seq, data.safe_structure(flags)]
+        "%s -m 6 -tr 0 -s %s -ss '%s'" % [MODES[flags[:mode]], data.seq, data.safe_structure]
       end
     end
     
