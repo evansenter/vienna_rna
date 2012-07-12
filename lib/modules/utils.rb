@@ -34,18 +34,21 @@ module ViennaRna
       end
       
       def plot(data, options = {})
-        options = { title: "Title", x_label: "X Axis", y_label: "Y Axis" }.merge(options)
-        
         Gnuplot.open do |gnuplot|
           Gnuplot::Plot.new(gnuplot) do |plot|
-
+            case options[:output]
+            when /file/i then
+              plot.output(options[:filename])
+              plot.terminal("png size 800,600")
+            end
+            
             plot.title(options[:title])
             plot.xlabel(options[:x_label])
             plot.ylabel(options[:y_label])
 
             plot.data = data.map do |data_hash|
               Gnuplot::DataSet.new([data_hash[:x], data_hash[:y]]) do |dataset|
-                dataset.with = "points"
+                dataset.with = data_hash[:style] || "points"
                 data_hash[:title] ? dataset.title = data_hash[:title] : dataset.notitle
               end
             end
