@@ -31,10 +31,14 @@ module ViennaRna
       full_distribution = distribution + ([0.0] * (data.seq.length - distribution.length + 1))
     end
     
+    def k_p_points
+      full_distribution.each_with_index.to_a.map(&:reverse)
+    end
+    
     def quick_plot
       ViennaRna::Utils.quick_plot(
         "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
-        full_distribution.each_with_index.to_a.map(&:reverse)
+        k_p_points
       )
     end
   end

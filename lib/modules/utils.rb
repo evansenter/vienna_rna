@@ -56,9 +56,15 @@ module ViennaRna
         end
       end
       
-      def quick_plot(title, data)
+      def quick_plot(title, data, filename = false)
         # data = [[x_0, y_0], [x_1, y_1], ...]
-        plot([{ x: data.map(&:first), y: data.map(&:last), style: "linespoints" }], title: title)
+        
+        tap do
+          options = { title: title }
+          options.merge!(output: "file", filename: filename) if filename
+        
+          plot([{ x: data.map(&:first), y: data.map(&:last), style: "linespoints" }], options)
+        end
       end
     end
   end
