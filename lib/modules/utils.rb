@@ -55,6 +55,11 @@ module ViennaRna
           end
         end
       end
+      
+      def quick_plot(title, data)
+        # data = [[x_0, y_0], [x_1, y_1], ...]
+        plot([{ x: data.map(&:first), y: data.map(&:last), style: "linespoints" }], title: title)
+      end
     end
   end
 end

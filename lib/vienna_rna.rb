@@ -3,12 +3,6 @@ require "active_support/inflector"
 require "active_support/core_ext/class"
 require "active_support/core_ext/module/aliasing"
 
-module Enumerable
-  def sum
-    inject(&:+)
-  end
-end
-
 module ViennaRna
   @debug = true
   

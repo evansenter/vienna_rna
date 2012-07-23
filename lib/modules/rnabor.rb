@@ -3,12 +3,16 @@ require "bigdecimal"
 
 module ViennaRna
   class Rnabor < Xbor
+    FLAGS = {
+      nodangle: :empty
+    }
+    
     def partition
-      non_zero_shells.sum
+      non_zero_shells.inject(&:+)
     end
     
     def total_count
-      counts.sum
+      counts.inject(&:+)
     end
     
     def counts

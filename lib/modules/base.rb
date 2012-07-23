@@ -82,14 +82,18 @@ module ViennaRna
     end
     
     def run_with_hooks(flags = {})
-      tap do
-        @runtime = Benchmark.measure do
-          pre_run_check unless respond_to?(:run_command)
-          @response = run_without_hooks(flags)
-          post_process if respond_to?(:post_process)
-        end
+      unless @response
+        tap do
+          @runtime = Benchmark.measure do
+            pre_run_check unless respond_to?(:run_command)
+            @response = run_without_hooks(flags)
+            post_process if respond_to?(:post_process)
+          end
         
-        debugger { "Total runtime: %.3f sec." % runtime.real }
+          debugger { "Total runtime: %.3f sec." % runtime.real }
+        end
+      else
+        self
       end
     end
     
