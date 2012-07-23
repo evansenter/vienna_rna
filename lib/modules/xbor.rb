@@ -28,7 +28,7 @@ module ViennaRna
     
     def full_distribution
       distribution      = run.distribution
-      full_distribution = distribution + ([0] * (data.seq.length - distribution.length + 1))
+      full_distribution = distribution + ([0.0] * (data.seq.length - distribution.length + 1))
     end
     
     def quick_plot
