@@ -9,7 +9,7 @@ module ViennaRna
     
     self.executable_name = -> { name.demodulize.gsub(/^([A-Z].*)bor$/) { |match| $1.upcase + "bor" } }
     
-    def run_command(flags)
+    def run_command(flags = {})
       file = Tempfile.new("rna")
       file.write("%s\n" % data.seq)
       file.write("%s\n" % data.safe_structure)
@@ -17,7 +17,7 @@ module ViennaRna
       
       "%s %s %s" % [
         exec_name, 
-        stringify_flags(BASE_FLAGS.merge(self.class.const_defined?(:FLAGS) ? self.class.const_get(:FLAGS) : {})), 
+        stringify_flags(BASE_FLAGS.merge(self.class.const_defined?(:FLAGS) ? self.class.const_get(:FLAGS) : {}).merge(flags)), 
         file.path
       ]
     end
@@ -28,11 +28,11 @@ module ViennaRna
     
     def full_distribution
       distribution      = run.distribution
-      full_distribution = distribution + ([0.0] * (data.seq.length - distribution.length + 1))
+      full_distribution = distribution + ([0.0] * ((differnece = data.seq.length - distribution.length + 1) < 0 ? 0 : differnece))
     end
     
     def k_p_points
-      full_distribution.each_with_index.to_a.map(&:reverse)
+      full_distribution.each_with_index.to_a.map(&:reverse)[0..data.seq.length]
     end
     
     def quick_plot
