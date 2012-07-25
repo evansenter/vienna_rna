@@ -6,8 +6,9 @@ require "active_support/core_ext/module/aliasing"
 module ViennaRna
   @debug = true
   
-  Dir[File.join(File.dirname(__FILE__), "/modules/*")].each do |file|
-    autoload File.basename(file, ".rb").camelize.to_sym, file
+  Dir[File.join(File.dirname(__FILE__), "vienna_rna", "modules", "*.rb")].each do |file|
+    # Doesn't support autoloading modules that are of the form: TwoWords
+    autoload(File.basename(file, ".rb").camelize.to_sym, "vienna_rna/modules/#{File.basename(file, '.rb')}")
   end
   
   def self.const_missing(name)
