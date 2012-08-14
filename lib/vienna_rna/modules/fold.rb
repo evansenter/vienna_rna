@@ -3,7 +3,7 @@ module ViennaRna
     attr_reader :structure, :mfe
     
     def post_process
-      structure = @response.split(/\n/).last.gsub(/ \(\s*(-?\d*\.\d*)\)$/, "")
+      structure = @response.split(/\n/).last.gsub(Parser::REGEXP[:mfe], "")
       
       unless data.seq.length == structure.length
         raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
