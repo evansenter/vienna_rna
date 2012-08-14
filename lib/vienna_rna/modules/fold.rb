@@ -8,7 +8,7 @@ module ViennaRna
       unless data.seq.length == structure.length
         raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
       else
-        @structure, @mfe = structure, $1.to_f
+        @structure, @mfe = structure, Parser.mfe(@response)
       end
     end
     

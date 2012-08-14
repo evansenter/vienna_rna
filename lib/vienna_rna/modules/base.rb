@@ -11,6 +11,7 @@ module ViennaRna
       end
 
       alias :seq :sequence
+      alias :str :structure
       
       def safe_structure
         structure || empty_structure
@@ -69,7 +70,12 @@ module ViennaRna
     end
     
     def exec_sequence_format
-      data.seq
+      if data.str
+        '"%s
+        %s"' % [data.seq, data.str]
+      else
+        data.seq
+      end
     end
     
     def initialize(data)
@@ -111,7 +117,7 @@ module ViennaRna
       command = if respond_to?(:run_command)
         method(:run_command).arity.zero? ? run_command : run_command(flags)
       else
-        "echo #{exec_sequence_format} | #{exec_name} -noPS #{stringify_flags(flags)}"
+        "echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}"
       end
       
       debugger { command }
