@@ -1,4 +1,5 @@
 require "bio"
+require "shuffle"
 require "active_support/inflector"
 require "active_support/core_ext/class"
 require "active_support/core_ext/module/aliasing"
