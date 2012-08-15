@@ -1,5 +1,9 @@
 module ViennaRna
   class Fold < Base
+    BASE_FLAGS = {
+      "-noPS" => :empty
+    }
+    
     attr_reader :structure, :mfe
     
     def post_process

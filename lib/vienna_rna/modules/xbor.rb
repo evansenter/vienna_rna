@@ -35,9 +35,9 @@ module ViennaRna
       full_distribution.each_with_index.to_a.map(&:reverse)[0..data.seq.length]
     end
     
-    def quick_plot
+    def quick_plot(title = nil)
       ViennaRna::Utils.quick_plot(
-        "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
+        title || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
         k_p_points
       )
     end

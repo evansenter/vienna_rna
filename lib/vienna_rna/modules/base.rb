@@ -90,7 +90,11 @@ module ViennaRna
     end
     
     def stringify_flags(flags)
-      flags.inject("") { |string, (flag, value)| (string + (value == :empty ? " -%s" % flag : " -%s %s" % [flag, value])).strip }
+      base_flags = self.class.const_defined?(:BASE_FLAGS) ? self.class.const_get(:BASE_FLAGS) : {}
+      
+      flags.merge(base_flags).inject("") do |string, (flag, value)| 
+        (string + (value == :empty ? " -%s" % flag : " -%s %s" % [flag, value])).strip
+      end
     end
     
     def run(flags = {})
