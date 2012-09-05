@@ -1,5 +1,8 @@
+require "set"
 require "bio"
 require "shuffle"
+require "matrix"
+require "gnuplot"
 require "active_support/inflector"
 require "active_support/core_ext/class"
 require "active_support/core_ext/module/aliasing"

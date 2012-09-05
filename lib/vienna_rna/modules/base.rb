@@ -24,6 +24,12 @@ module ViennaRna
         new(data).run(flags)
       end
       
+      def bootstrap(data, output)
+        new(data).tap do |object|
+          object.instance_variable_set(:@response, output)
+        end
+      end
+      
       def batch(fastas = [])
         ViennaRna::Batch.new(self, fastas).tap do |batch|
           if const_defined?(:Batch)

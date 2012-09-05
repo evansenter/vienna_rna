@@ -1,6 +1,3 @@
-require "matrix"
-require "gnuplot"
-
 module ViennaRna
   module Utils
     class << self
@@ -57,11 +54,15 @@ module ViennaRna
       end
       
       def quick_plot(title, data, filename = false)
-        # data = [[x_0, y_0], [x_1, y_1], ...]        
+        quick_overlay(title, [{ data: data }], filename)
+      end
+      
+      def quick_overlay(title, data, filename = false)
+        # [{ data: [[x_0, y_0], [x_1, y_1], ...], label: "Label" }, { data: [[x_0, y_0], [x_1, y_1], ...] }]
         options = { title: title }
         options.merge!(output: "file", filename: filename) if filename
         
-        plot([{ x: data.map(&:first), y: data.map(&:last), style: "linespoints" }], options)
+        plot(data.map { |hash| { title: hash[:label], x: hash[:data].map(&:first), y: hash[:data].map(&:last), style: "linespoints" } }, options)
       end
     end
   end

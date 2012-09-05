@@ -35,11 +35,19 @@ module ViennaRna
       full_distribution.each_with_index.to_a.map(&:reverse)[0..data.seq.length]
     end
     
+    def expected_k
+      k_p_points.map { |array| array.inject(&:*) }.inject(&:+)
+    end
+    
     def quick_plot(title = nil)
       ViennaRna::Utils.quick_plot(
         title || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
         k_p_points
       )
+    end
+    
+    def inspect
+      "#<ViennaRna::#{self.class.name} #{data.inspect}>"
     end
   end
 end
