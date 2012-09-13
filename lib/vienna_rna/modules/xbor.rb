@@ -39,10 +39,11 @@ module ViennaRna
       k_p_points.map { |array| array.inject(&:*) }.inject(&:+)
     end
     
-    def quick_plot(title = nil)
+    def quick_plot(options = {})
       ViennaRna::Utils.quick_plot(
-        title || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
-        k_p_points
+        options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
+        k_p_points,
+        options
       )
     end
     

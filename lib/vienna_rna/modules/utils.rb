@@ -39,9 +39,9 @@ module ViennaRna
               plot.terminal("png size 800,600")
             end
             
-            plot.title(options[:title])
-            plot.xlabel(options[:x_label])
-            plot.ylabel(options[:y_label])
+            options[:plot].keys.each do |option|
+              plot.send(option, options[:plot][option])
+            end
 
             plot.data = data.map do |data_hash|
               Gnuplot::DataSet.new([data_hash[:x], data_hash[:y]]) do |dataset|
@@ -53,14 +53,14 @@ module ViennaRna
         end
       end
       
-      def quick_plot(title, data, filename = false)
-        quick_overlay(title, [{ data: data }], filename)
+      def quick_plot(title, data, options = {})
+        quick_overlay(title, [{ data: data }], options)
       end
       
-      def quick_overlay(title, data, filename = false)
+      def quick_overlay(title, data, options = {})
         # [{ data: [[x_0, y_0], [x_1, y_1], ...], label: "Label" }, { data: [[x_0, y_0], [x_1, y_1], ...] }]
-        options = { title: title }
-        options.merge!(output: "file", filename: filename) if filename
+        options[:plot] = ((options[:plot] || {}).merge(title: title))
+        options.merge!(output: "file") if options[:filename]
         
         plot(data.map { |hash| { title: hash[:label], x: hash[:data].map(&:first), y: hash[:data].map(&:last), style: "linespoints" } }, options)
       end

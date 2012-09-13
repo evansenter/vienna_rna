@@ -4,7 +4,7 @@ module ViennaRna
       "-noPS" => :empty
     }
     
-    attr_reader :structure, :mfe
+    attr_reader :mfe_rna, :structure, :mfe
     
     def post_process
       structure = @response.split(/\n/).last.gsub(Parser::REGEXP[:mfe], "")
@@ -12,7 +12,7 @@ module ViennaRna
       unless data.seq.length == structure.length
         raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
       else
-        @structure, @mfe = structure, Parser.mfe(@response)
+        @mfe_rna, @structure, @mfe = ViennaRna::Rna.new(data.seq, structure), structure, Parser.mfe(@response)
       end
     end
     
