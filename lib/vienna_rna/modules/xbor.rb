@@ -41,8 +41,8 @@ module ViennaRna
     
     def quick_plot(options = {})
       ViennaRna::Utils.quick_plot(
-        options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure], 
         k_p_points,
+        options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure],
         options
       )
     end

@@ -39,7 +39,7 @@ module ViennaRna
               plot.terminal("png size 800,600")
             end
             
-            options[:plot].keys.each do |option|
+            (options[:plot] || {}).keys.each do |option|
               plot.send(option, options[:plot][option])
             end
 
@@ -53,11 +53,36 @@ module ViennaRna
         end
       end
       
-      def quick_plot(title, data, options = {})
-        quick_overlay(title, [{ data: data }], options)
+      def splot(data, options = {})
+        # [[x_1, y_1, z_1], [x_2, y_2, z_2], ...]
+        orthogonal_data = data.inject([[], [], []]) { |array, list| array.zip(list).map { |a, e| a << e } }
+        
+        Gnuplot.open do |gnuplot|
+          Gnuplot::SPlot.new(gnuplot) do |plot|
+            case options[:output]
+            when /file/i then
+              plot.output(options[:filename])
+              plot.terminal("png size 800,600")
+            end
+            
+            (options[:plot] || {}).keys.each do |option|
+              plot.send(option, options[:plot][option])
+            end
+
+            plot.data = [
+              Gnuplot::DataSet.new(orthogonal_data) do |dataset|
+                dataset.with = options[:style] || "lines"
+              end
+            ]
+          end
+        end
       end
       
-      def quick_overlay(title, data, options = {})
+      def quick_plot(data, title = "", options = {})
+        quick_overlay([{ data: data }], title, options)
+      end
+      
+      def quick_overlay(data, title = "", options = {})
         # [{ data: [[x_0, y_0], [x_1, y_1], ...], label: "Label" }, { data: [[x_0, y_0], [x_1, y_1], ...] }]
         options[:plot] = ((options[:plot] || {}).merge(title: title))
         options.merge!(output: "file") if options[:filename]
