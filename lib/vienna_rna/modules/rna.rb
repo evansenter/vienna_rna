@@ -14,9 +14,6 @@ module ViennaRna
         @structure = (structure == :mfe ? ViennaRna::Fold.run(seq).structure : structure)
       end
     end
-
-    alias :seq :sequence
-    alias :str :structure
       
     def safe_structure
       structure || empty_structure
@@ -25,6 +22,9 @@ module ViennaRna
     def empty_structure
       "." * seq.length
     end
+    
+    alias :seq :sequence
+    alias :str :safe_structure
     
     def inspect
       "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)} #{str[0, 20] + ('[truncated]' if seq.length > 20)}>"

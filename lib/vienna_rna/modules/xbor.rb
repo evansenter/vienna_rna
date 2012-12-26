@@ -22,6 +22,14 @@ module ViennaRna
       ]
     end
     
+    def self.bootstrap_from_file(path, klass = self)
+      log       = File.read(path)
+      sequence  = log.split(/\n/).first.split(/\s+/)[1]
+      structure = log.split(/\n/).first.split(/\s+/)[2]
+      
+      klass.bootstrap(ViennaRna::Rna.new(sequence, structure), log)
+    end
+    
     def self.parse(response)
       response.split(/\n/).select { |line| line =~ /^\d+\t-?\d+/ }.map { |line| line.split(/\t/) }
     end

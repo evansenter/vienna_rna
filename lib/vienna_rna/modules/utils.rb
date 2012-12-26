@@ -33,6 +33,8 @@ module ViennaRna
       def plot(data, options = {})
         Gnuplot.open do |gnuplot|
           Gnuplot::Plot.new(gnuplot) do |plot|
+            plot.autoscale
+            
             case options[:output]
             when /file/i then
               plot.output(options[:filename])
@@ -59,6 +61,8 @@ module ViennaRna
         
         Gnuplot.open do |gnuplot|
           Gnuplot::SPlot.new(gnuplot) do |plot|
+            plot.autoscale
+            
             case options[:output]
             when /file/i then
               plot.output(options[:filename])
@@ -76,6 +80,39 @@ module ViennaRna
             ]
           end
         end
+      end
+      
+      def histogram(data, title = "", options = {})
+        bin_size = options.delete(:bin_size) || 1
+        half     = bin_size / 2.0
+        range    = Range.new((data.min - half).floor, (data.max + half).ceil)
+        groups   = (range.min + half).step(range.max, bin_size).map { |x| [x, data.count { |i| i >= x - half && i < x + half }] }
+        
+        options.merge!(output: "file") if options[:filename]
+        options.merge!({
+          plot: {
+            title:  title,
+            yrange: "[0:#{groups.map(&:last).max * 1.1}]",
+            xtics:  "#{[bin_size, 5].max}",
+            style:  "fill solid 0.5 border"
+          }
+        })
+  
+        plot([{ x: groups.map(&:first), y: groups.map(&:last), style: "boxes" }], options)
+      end
+      
+      def roc(data, title = "", options = {})
+        # data = [[true_score_1, true_score_2, ...], [false_score_1, false_score_2, ...]]
+        roc_curve = ROC.curve_points({ 1 => data[0], -1 => data[1] }.inject([]) { |data, (truth, values)| data.concat(values.map { |i| [i, truth] })})
+        area      = roc_curve.each_cons(2).inject(0) do |sum, (a, b)| 
+          delta_x, delta_y = b[0] - a[0], b[1] - a[1]
+          sum + (delta_x * delta_y / 2 + delta_x * [a[1], b[1]].min)
+        end
+        
+        options.merge!(output: "file") if options[:filename]
+        options.merge!({ plot: { title: "%s %s %.4f" % [title, "AUC:", area] } })
+  
+        plot([{ x: roc_curve.map(&:first), y: roc_curve.map(&:last), style: "lines" }], options)
       end
       
       def quick_plot(data, title = "", options = {})
