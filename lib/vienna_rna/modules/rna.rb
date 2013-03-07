@@ -2,32 +2,56 @@ module ViennaRna
   class Rna
     include ViennaRna::RnaExtensions
     
-    attr_reader :sequence, :structure
+    attr_reader :sequence, :structure, :raw_data
       
-    def initialize(sequence, structure = nil)
-      if sequence.class == self.class
-        # Too bad you can't do this in a cleaner way without method chaining initialize
-        @sequence  = sequence.sequence
-        @structure = sequence.structure
-      else
-        @sequence  = sequence.upcase
-        @structure = (structure == :mfe ? ViennaRna::Fold.run(seq).structure : structure)
+    class << self
+      def init_from_string(sequence, structure = nil)
+        new(sequence, structure)
+      end
+    
+      def init_from_hash(hash)
+        new(data[:sequence] || data[:seq], data[:structure] || data[:str], data)
+      end
+      
+      def init_from_array(array)
+        new(*array)
+      end
+      
+      def init_from_fasta(string)
+        init_from_string(*string.split(/\n/).reject { |line| line.start_with?(">") })
+      end
+    
+      def init_from_self(rna)
+        # This happens when you call a ViennaRna library function with the output of something like ViennaRna::Fold.run(...).mfe
+        new(rna.sequence, rna.structure, rna.raw_data)
       end
     end
+    
+    def initialize(sequence, structure, raw_data = {})
+      @sequence, @raw_data = sequence, raw_data
       
-    def safe_structure
-      structure || empty_structure
-    end
-      
-    def empty_structure
-      "." * seq.length
+      @structure = case structure
+      when :empty then empty_structure
+      when :mfe   then ViennaRna::Fold.run(seq).structure
+      when String then structure
+      end
     end
     
     alias :seq :sequence
-    alias :str :safe_structure
+    alias :str :structure
     
     def inspect
-      "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)} #{str[0, 20] + ('[truncated]' if seq.length > 20)}>"
+      if structure.present?
+        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)} #{str[0, 20] + (' [truncated]' if str.length > 20)}>"
+      else
+        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)}>"
+      end
+    end
+    
+    private
+      
+    def empty_structure
+      "." * seq.length
     end
   end
 end

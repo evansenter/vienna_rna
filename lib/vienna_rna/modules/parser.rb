@@ -5,8 +5,12 @@ module ViennaRna
     }
     
     class << self
-      def mfe(response)
-        response.split(/\n/).last.match(REGEXP[:mfe])[1].to_f
+      def rnafold_mfe_structure(response)
+        response.split(/\n/)[1].split(/\s+/).first
+      end
+      
+      def rnafold_mfe(response)
+        response.split(/\n/)[1].match(REGEXP[:mfe])[1].to_f
       end
     end
   end

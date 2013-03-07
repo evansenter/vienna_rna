@@ -12,8 +12,10 @@ module ViennaRna
     def run_command(flags = {})
       file = Tempfile.new("rna")
       file.write("%s\n" % data.seq)
-      file.write("%s\n" % data.safe_structure)
+      file.write("%s\n" % data.str)
       file.close
+      
+      debugger { "Running FFTbor on #{data.inspect}" }
       
       "%s %s %s" % [
         exec_name, 
@@ -27,7 +29,7 @@ module ViennaRna
       sequence  = log.split(/\n/).first.split(/\s+/)[1]
       structure = log.split(/\n/).first.split(/\s+/)[2]
       
-      klass.bootstrap(ViennaRna::Rna.new(sequence, structure), log)
+      klass.bootstrap(ViennaRna::Rna.init_from_string(sequence, structure), log)
     end
     
     def self.parse(response)

@@ -7,12 +7,12 @@ module ViennaRna
     attr_reader :mfe_rna, :structure, :mfe
     
     def post_process
-      structure = @response.split(/\n/).last.gsub(Parser::REGEXP[:mfe], "")
+      structure = Parser.rnafold_mfe_structure(@response)
       
       unless data.seq.length == structure.length
         raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
       else
-        @mfe_rna, @structure, @mfe = ViennaRna::Rna.new(data.seq, structure), structure, Parser.mfe(@response)
+        @mfe_rna, @structure, @mfe = ViennaRna::Rna.init_from_string(data.seq, structure), structure, Parser.rnafold_mfe(@response)
       end
     end
     

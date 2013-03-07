@@ -20,7 +20,8 @@ module ViennaRna
         !%x[which rna#{name.to_s.downcase}].empty?
       end
       
-      def run(data, flags = {})
+      def run(*data)
+        flags = data.length > 1 && data.last.is_a?(Hash) ? data.pop : {}
         new(data).run(flags)
       end
       
@@ -65,11 +66,14 @@ module ViennaRna
     end
     
     def initialize(data)
-      @data = case data
-      when Bio::FastaFormat then data
-      when Rna              then data
-      when String           then Rna.new(data)
-      when Hash             then Rna.new(data[:sequence] || data[:seq], data[:structure] || data[:str])
+      data  = [data] unless data.is_a?(Array)
+      
+      @data = case data.map(&:class)
+      when [Rna]                      then data.first
+      when [String], [String, String] then Rna.init_from_string(*data)
+      when [Hash]                     then Rna.init_from_hash(*data)
+      when [Array]                    then Rna.init_from_array(*data)
+      else raise TypeError.new("Unsupported ViennaRna::Rna#initialize format: #{data}")
       end
     end
     
