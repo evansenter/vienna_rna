@@ -18,7 +18,7 @@ module ViennaRna
     module ClassMethods
       def generate_sequence(sequence_length)
         # 0th order Markov chain w/ uniform probability distribution
-        sequence_length.times.inject("") { |string, _| string + %w[A U C G][rand(4)] }
+        Rna.init_from_string(sequence_length.times.inject("") { |string, _| string + %w[A U C G][rand(4)] })
       end
       
       def shuffle(sequence, token_length = 2)

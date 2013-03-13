@@ -10,7 +10,7 @@ module ViennaRna
       end
     
       def init_from_hash(hash)
-        new(data[:sequence] || data[:seq], data[:structure] || data[:str], data)
+        new(hash[:sequence] || hash[:seq], hash[:structure] || hash[:str], hash)
       end
       
       def init_from_array(array)
@@ -41,10 +41,23 @@ module ViennaRna
     alias :str :structure
     
     def inspect
-      if structure.present?
-        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)} #{str[0, 20] + (' [truncated]' if str.length > 20)}>"
-      else
-        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + ('...' if seq.length > 20)}>"
+      case [sequence.present?, structure.present?]
+      when [true, true] then
+        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')} #{str[0, 20] + (str.length > 20 ? ' [truncated]' : '')}>"
+      when [true, false] then
+        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')}>"
+      when [false, false] then
+        "#<ViennaRna::#{self.class.name}>"
+      end
+    end
+    
+    def write_fa!(filename, comment = "")
+      (File.basename(filename, ".fa") + ".fa").tap do |filename|
+        File.open(filename, "w") do |file|
+          file.write("> %s\n" % comment) if comment
+          file.write("%s\n" % seq)       if seq
+          file.write("%s\n" % str)       if str
+        end
       end
     end
     
