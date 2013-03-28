@@ -38,7 +38,7 @@ module ViennaRna
             case options[:output]
             when /file/i then
               plot.output(options[:filename])
-              plot.terminal("png size 800,600")
+              plot.terminal("png size %s" % (options[:dimensions] || "800,600"))
             end
             
             (options[:plot] || {}).keys.each do |option|
@@ -47,7 +47,9 @@ module ViennaRna
 
             plot.data = data.map do |data_hash|
               Gnuplot::DataSet.new([data_hash[:x], data_hash[:y]]) do |dataset|
-                dataset.with = data_hash[:style] || "points"
+                dataset.with      = data_hash[:style] || "points"
+                dataset.linecolor = "rgb '#{data_hash[:color]}'" if data_hash[:color]
+
                 data_hash[:title] ? dataset.title = data_hash[:title] : dataset.notitle
               end
             end
