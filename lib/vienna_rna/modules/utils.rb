@@ -105,6 +105,9 @@ module ViennaRna
       
       def roc(data, title = "", options = {})
         # data = [[true_score_1, true_score_2, ...], [false_score_1, false_score_2, ...]]
+        # This 'twiddle' removes duplicates by adding a very small random number to any repeated value
+        data = data.map { |scores| scores.group_by(&:_ident).values.inject([]) { |array, values| array + (values.size > 1 ? values.map { |i| i + 1e-8 * (rand - 0.5) } : values) } }
+        
         roc_curve = ROC.curve_points({ 1 => data[0], -1 => data[1] }.inject([]) { |data, (truth, values)| data.concat(values.map { |i| [i, truth] })})
         area      = roc_curve.each_cons(2).inject(0) do |sum, (a, b)| 
           delta_x, delta_y = b[0] - a[0], b[1] - a[1]
