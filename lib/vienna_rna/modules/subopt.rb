@@ -3,7 +3,7 @@ module ViennaRna
     attr_reader :structures
     
     def post_process
-      @structures = @response.split(/\n/)[1..-1].map { |output| ViennaRna::Rna.init_from_string(data.seq, output.split(/\s+/).first) }
+      @structures = @response.split(/\n/)[1..-1].map { |output| Rna.init_from_string(data.seq, output.split(/\s+/).first) }
     end
     
     def bin(count = 1)

@@ -29,7 +29,7 @@ module ViennaRna
       sequence  = log.split(/\n/).first.split(/\s+/)[1]
       structure = log.split(/\n/).first.split(/\s+/)[2]
       
-      klass.bootstrap(ViennaRna::Rna.init_from_string(sequence, structure), log)
+      klass.bootstrap(Rna.init_from_string(sequence, structure), log)
     end
     
     def self.parse(response)

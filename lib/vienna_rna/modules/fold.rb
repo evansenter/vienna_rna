@@ -12,7 +12,7 @@ module ViennaRna
       unless data.seq.length == structure.length
         raise "Sequence: '#{data.seq}'\nStructure: '#{structure}'"
       else
-        @mfe_rna, @structure, @mfe = ViennaRna::Rna.init_from_string(data.seq, structure), structure, Parser.rnafold_mfe(@response)
+        @mfe_rna, @structure, @mfe = Rna.init_from_string(data.seq, structure), structure, Parser.rnafold_mfe(@response)
       end
     end
     

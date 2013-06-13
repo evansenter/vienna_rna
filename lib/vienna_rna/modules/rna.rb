@@ -32,7 +32,7 @@ module ViennaRna
       
       @structure = case structure
       when :empty then empty_structure
-      when :mfe   then ViennaRna::Fold.run(ViennaRna::Rna.init_from_string(seq)).structure
+      when :mfe   then ViennaRna::Fold.run(Rna.init_from_string(seq)).structure
       when String then structure
       end
     end
