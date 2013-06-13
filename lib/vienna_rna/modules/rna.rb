@@ -40,6 +40,10 @@ module ViennaRna
     alias :seq :sequence
     alias :str :structure
     
+    def gc_content
+      seq.split(//).select { |i| i =~ /[GC]/i }.size.to_f / seq.size
+    end
+    
     def inspect
       case [sequence.present?, structure.present?]
       when [true, true] then

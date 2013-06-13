@@ -32,3 +32,10 @@ module ViennaRna
     @debug = value
   end
 end
+
+# This dirties up the public namespace, but I use it so many times that I want a shorthand to it
+unless defined? RNA
+  def RNA(sequence, structure = nil)
+    ViennaRna::Rna.init_from_string(sequence, structure)
+  end
+end
