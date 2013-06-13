@@ -4,7 +4,8 @@ module ViennaRna
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
       base.extend(StructureBasedClassAndInstanceMethods)
-      
+
+      # All the methods in here are also copied in as instance methods, where the first argument is the ViennaRna::Rna#structure      
       base.class_eval do
         StructureBasedClassAndInstanceMethods.public_instance_methods.each do |class_method|
           define_method(class_method) do |*args|
@@ -34,8 +35,6 @@ module ViennaRna
     end
     
     module StructureBasedClassAndInstanceMethods
-      # All the methods in here are also copied in as instance methods, where the first argument is the ViennaRna::Rna#structure
-      
       def bp_distance(structure_1, structure_2)
         # Takes two structures and calculates the distance between them by |symmetric difference(bp_in_a, bp_in_b)|
         raise "The two structures are not the same length" unless structure_1.length == structure_2.length
