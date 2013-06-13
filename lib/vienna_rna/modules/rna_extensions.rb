@@ -2,6 +2,7 @@ module ViennaRna
   module RnaExtensions
     def self.included(base)
       base.extend(ClassMethods)
+      base.send(:include, InstanceMethods)
       base.extend(StructureBasedClassAndInstanceMethods)
       
       base.class_eval do
@@ -23,6 +24,12 @@ module ViennaRna
       
       def shuffle(sequence, token_length = 2)
         Shuffle.new(sequence).shuffle(token_length)
+      end
+    end
+
+    module InstanceMethods
+      def gc_content
+        seq.split(//).select { |i| i =~ /[GC]/i }.size.to_f / seq.size
       end
     end
     

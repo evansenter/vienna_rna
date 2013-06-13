@@ -17,7 +17,9 @@ module ViennaRna
   end
   
   def self.const_missing(name)
-    if Base.exec_exists?(name)
+    if const_defined?(name)
+      const_get(name)
+    elsif Base.exec_exists?(name)
       module_eval do
         const_set(name, Class.new(Base))
       end

@@ -40,9 +40,6 @@ module ViennaRna
     alias :seq :sequence
     alias :str :structure
     
-    def gc_content
-      seq.split(//).select { |i| i =~ /[GC]/i }.size.to_f / seq.size
-    end
     
     def inspect
       case [sequence.present?, structure.present?]
@@ -63,6 +60,10 @@ module ViennaRna
           file.write("%s\n" % str)       if str
         end
       end
+    end
+
+    def run(module_name, options = {})
+      ViennaRna.const_missing("#{module_name}".camelize).run(self, options)
     end
     
     private
