@@ -44,11 +44,11 @@ module ViennaRna
     def inspect
       case [sequence.present?, structure.present?]
       when [true, true] then
-        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')} #{str[0, 20] + (str.length > 20 ? ' [truncated]' : '')}>"
+        "#<#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')} #{str[0, 20] + (str.length > 20 ? ' [truncated]' : '')}>"
       when [true, false] then
-        "#<ViennaRna::#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')}>"
+        "#<#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')}>"
       when [false, false] then
-        "#<ViennaRna::#{self.class.name}>"
+        "#<#{self.class.name}>"
       end
     end
     

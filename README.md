@@ -16,4 +16,4 @@ Simple use case:
     > mfe_rna = RNA("CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG").run(:fold).mfe_rna
     #=> echo CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG | rnafold --noPS
     #=> Total runtime: 0.013 sec.
-    #=> #<ViennaRna::ViennaRna::Rna CCUCGAGGGGAACCCGAAAG... ((((..(((...(((....) [truncated]>
+    #=> #<ViennaRna::Rna CCUCGAGGGGAACCCGAAAG... ((((..(((...(((....) [truncated]>
