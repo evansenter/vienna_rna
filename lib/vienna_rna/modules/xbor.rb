@@ -50,7 +50,7 @@ module ViennaRna
     end
     
     def quick_plot(options = {})
-      ViennaRna::Utils.quick_plot(
+      ViennaRna::Graphing::Gnuplot.quick_plot(
         k_p_points,
         options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure],
         options
@@ -58,7 +58,7 @@ module ViennaRna
     end
     
     def inspect
-      "#<ViennaRna::#{self.class.name} #{data.inspect}>"
+      "#<#{self.class.name} #{data.inspect}>"
     end
   end
 end
