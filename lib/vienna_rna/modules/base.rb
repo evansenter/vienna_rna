@@ -94,7 +94,7 @@ module ViennaRna
     end
     
     def pre_run_check
-      if self.class.exec_exists?(exec_name)
+      if %x[which #{exec_name}].empty?
         raise RuntimeError.new("#{exec_name} is not defined on this machine")
       end
     end
