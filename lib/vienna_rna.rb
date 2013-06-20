@@ -9,6 +9,8 @@ require "active_support/inflector"
 require "active_support/core_ext/class"
 require "active_support/core_ext/module/aliasing"
 
+begin; R.quit; rescue IOError; end
+
 module ViennaRna
   @debug = true
   

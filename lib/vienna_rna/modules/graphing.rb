@@ -2,29 +2,39 @@ module ViennaRna
   module Graphing
     module R
       class << self
-        def graph(string)
-
+        def graph(&block)
+          begin
+            (yield r_instance = RinRuby.new).tap { ap r_instance.close }
+          rescue RuntimeError => e
+            raise unless e.message == "Unsupported data type on R's end"
+          end
         end
 
         def pdf(string)
 
         end
         
-        def histogram(data, title = nil, options = {})
-          bin_size = options.delete(:bin_size) || 1
+        def histogram(data, title: nil, x_label: "Bins", bin_size: 1, filename: false)
           half     = bin_size / 2.0
           range    = Range.new((data.min - half).floor, (data.max + half).ceil)
-          breaks   = (range.min + half).step(range.max, bin_size).to_a
+          breaks   = (range.min + half).step(range.max + half, bin_size).to_a
           
-          if filename = options.delete(:filename)
-            # 
-          else
-            ::R.assign("histogram.data", data)
-            ::R.assign("histogram.breaks", breaks)
-            ::R.eval <<-STR
-              quartz("Histogram", 6, 6)
-              hist(histogram.data, breaks = histogram.breaks, xlab = "Bins", main = "#{title || 'Histogram'}")
-            STR
+          graph do |r|
+            r.assign("histogram.data", data)
+            r.assign("histogram.breaks", breaks)
+
+            if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
+              r.eval <<-STR
+                pdf("#{filename}", 6, 6)
+                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}")
+                dev.off()
+              STR
+            else
+              r.eval <<-STR
+                quartz("Histogram", 6, 6)
+                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}")
+              STR
+            end
           end
         end
         
