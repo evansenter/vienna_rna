@@ -17,7 +17,7 @@ module ViennaRna
       end
       
       def exec_exists?(name)
-        !%x[which rna#{name.to_s.downcase}].empty?
+        !%x[which RNA#{name.to_s.downcase}].empty?
       end
       
       def run(*data)
@@ -52,7 +52,7 @@ module ViennaRna
       if executable_name
         executable_name.respond_to?(:call) ? self.class.module_exec(&executable_name) : executable_name
       else
-        "rna#{self.class.name.split('::').last.underscore}"
+        "RNA#{self.class.name.split('::').last.underscore}"
       end
     end
     
