@@ -4,17 +4,33 @@ module ViennaRna
       class << self
         def graph(&block)
           begin
-            (yield r_instance = RinRuby.new).tap { ap r_instance.close }
+            (yield (r_instance = RinRuby.new)).tap { r_instance.close }
           rescue RuntimeError => e
             raise unless e.message == "Unsupported data type on R's end"
           end
         end
 
-        def pdf(string)
+        def line_graph(data, title: nil, type: "l", x_label: "Independent", y_label: "Dependent", filename: false)
+          graph do |r|
+            r.assign("line_graph.x", data.map(&:first))
+            r.assign("line_graph.y", data.map(&:last))
 
+            if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
+              r.eval <<-STR
+                pdf("#{filename}", 6, 6)
+                plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
+                dev.off()
+              STR
+            else
+              r.eval <<-STR
+                quartz("Histogram", 6, 6)
+                plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
+              STR
+            end
+          end
         end
         
-        def histogram(data, title: nil, x_label: "Bins", bin_size: 1, filename: false)
+        def histogram(data, title: nil, x_label: "Bins", bin_size: 1, relative: false, filename: false)
           half     = bin_size / 2.0
           range    = Range.new((data.min - half).floor, (data.max + half).ceil)
           breaks   = (range.min + half).step(range.max + half, bin_size).to_a
@@ -26,13 +42,13 @@ module ViennaRna
             if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
               r.eval <<-STR
                 pdf("#{filename}", 6, 6)
-                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}")
+                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}", freq = #{relative ? 'FALSE' : 'TRUE'})
                 dev.off()
               STR
             else
               r.eval <<-STR
                 quartz("Histogram", 6, 6)
-                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}")
+                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}", freq = #{relative ? 'FALSE' : 'TRUE'})
               STR
             end
           end
