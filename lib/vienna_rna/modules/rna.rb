@@ -42,7 +42,7 @@ module ViennaRna
     
     
     def inspect
-      case [sequence.present?, structure.present?]
+      case [!(seq || "").empty?, !(str || "").empty?]
       when [true, true] then
         "#<#{self.class.name} #{seq[0, 20] + (seq.length > 20 ? '...' : '')} #{str[0, 20] + (str.length > 20 ? ' [truncated]' : '')}>"
       when [true, false] then
