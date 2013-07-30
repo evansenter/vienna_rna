@@ -51,7 +51,7 @@ end
 
 module RNA
   def self.method_missing(name, *args, &block)
-    if "#{name}" =~ /^from_\w*$/
+    if "#{name}" =~ /^from_\w+$/
       ViennaRna::Rna.send("init_#{name}", *args)
     else super end
   end
