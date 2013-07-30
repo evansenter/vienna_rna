@@ -28,6 +28,10 @@ module ViennaRna
       end
     end
   end
+
+  def self.debugger
+    STDERR.puts yield if ViennaRna.debug
+  end
   
   def self.debug
     @debug
@@ -41,6 +45,14 @@ end
 # This dirties up the public namespace, but I use it so many times that I want a shorthand to it
 unless defined? RNA
   def RNA(sequence, structure = nil)
-    ViennaRna::Rna.init_from_string(sequence, structure)
+    RNA.from_string(sequence, structure)
+  end
+end
+
+module RNA
+  def self.method_missing(name, *args, &block)
+    if "#{name}" =~ /^from_\w*$/
+      ViennaRna::Rna.send("init_#{name}", *args)
+    else super end
   end
 end

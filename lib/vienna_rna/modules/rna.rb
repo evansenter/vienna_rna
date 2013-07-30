@@ -18,7 +18,8 @@ module ViennaRna
       end
       
       def init_from_fasta(string)
-        init_from_string(*string.split(/\n/).reject { |line| line.start_with?(">") })
+        string = File.read(string).chomp if File.exist?(string)
+        init_from_string(*string.split(/\n/).reject { |line| line.start_with?(">") }[0, 2])
       end
     
       def init_from_self(rna)
@@ -34,6 +35,10 @@ module ViennaRna
       when :empty then empty_structure
       when :mfe   then ViennaRna::Fold.run(Rna.init_from_string(seq)).structure
       when String then structure
+      end
+
+      if str && seq.length != str.length
+        ViennaRna.debugger { "The sequence length (%d) doesn't match the structure length (%d)" % [seq.length, str.length] }
       end
     end
     

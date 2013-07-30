@@ -40,10 +40,6 @@ module ViennaRna
           end
         end
       end
-      
-      def debugger
-        STDERR.puts yield if ViennaRna.debug
-      end
     end
     
     attr_reader :data, :response, :runtime
@@ -86,7 +82,7 @@ module ViennaRna
             post_process if respond_to?(:post_process)
           end
         
-          debugger { "Total runtime: %.3f sec." % runtime.real }
+          ViennaRna.debugger { "Total runtime: %.3f sec." % runtime.real }
         end
       else
         self
@@ -114,7 +110,7 @@ module ViennaRna
         "echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}"
       end
       
-      debugger { command }
+      ViennaRna.debugger { command }
         
       %x[#{command}]
     end

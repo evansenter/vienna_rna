@@ -15,7 +15,7 @@ module ViennaRna
       file.write("%s\n" % data.str)
       file.close
       
-      debugger { "Running FFTbor on #{data.inspect}" }
+      ViennaRna.debugger { "Running FFTbor on #{data.inspect}" }
       
       "%s %s %s" % [
         exec_name, 
