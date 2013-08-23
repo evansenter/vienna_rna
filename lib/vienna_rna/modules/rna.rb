@@ -89,6 +89,10 @@ module ViennaRna
         end
       end
     end
+    
+    def temp_fa_file!
+      write_fa!(Tempfile.new("")).path
+    end
 
     def run(module_name, options = {})
       if rna_module = ViennaRna.const_missing("#{module_name}".camelize)
