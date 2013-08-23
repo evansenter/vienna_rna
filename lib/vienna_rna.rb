@@ -44,8 +44,8 @@ end
 
 # This dirties up the public namespace, but I use it so many times that I want a shorthand to it
 unless defined? RNA
-  def RNA(sequence, structure = nil)
-    RNA.from_string(sequence, structure)
+  def RNA(*args)
+    RNA.from_array(args)
   end
 end
 

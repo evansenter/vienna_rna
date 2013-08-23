@@ -65,10 +65,10 @@ module ViennaRna
       data  = [data] unless data.is_a?(Array)
       
       @data = case data.map(&:class)
-      when [Rna]                      then data.first
-      when [String], [String, String] then Rna.init_from_string(*data)
-      when [Hash]                     then Rna.init_from_hash(*data)
-      when [Array]                    then Rna.init_from_array(*data)
+      when [Rna]                            then data.first
+      when *(1..3).map { |i| [String] * i } then Rna.init_from_string(*data)
+      when [Hash]                           then Rna.init_from_hash(*data)
+      when [Array]                          then Rna.init_from_array(*data)
       else raise TypeError.new("Unsupported ViennaRna::Rna#initialize format: #{data}")
       end
     end
