@@ -80,8 +80,8 @@ module ViennaRna
     end
     
     def write_fa!(filename, comment = "")
-      (File.basename(filename, ".fa") + ".fa").tap do |filename|
-        File.open(filename, "w") do |file|
+      filename.tap do |filename|
+        File.open(filename, ?w) do |file|
           file.write("> %s\n" % comment) if comment
           file.write("%s\n" % seq)       if seq
           file.write("%s\n" % str_1)     if str_1
