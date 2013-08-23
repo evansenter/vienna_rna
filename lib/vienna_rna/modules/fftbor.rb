@@ -4,11 +4,6 @@ require "diverge"
 
 module ViennaRna
   class Fftbor < Xbor
-    MODES = {
-      dispatch:   "RNAcentral",
-      standalone: "FFTbor"
-    }
-    
     def partition
       response.split(/\n/).find { |line| line =~ /^Scaling factor.*:\s+(\d+\.\d+)/ }
       BigDecimal.new($1)
