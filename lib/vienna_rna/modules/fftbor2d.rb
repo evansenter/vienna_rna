@@ -1,7 +1,7 @@
 module ViennaRna
-  class Fftbor2d < Base
+  class Fftbor2d < EnergyGrid2d
     BASE_FLAGS = {
-      E: "/usr/local/bin/rna_turner1999.par",
+      # E: "/usr/local/bin/rna_turner1999.par",
       P: 8,
       S: :empty
     }
@@ -19,10 +19,7 @@ module ViennaRna
     end
     
     def distribution
-      response.split(/\n/).map do |line| 
-        i, j, p, ensemble = line.split(/\t/)
-        [i, j].map(&:to_i) + [p, ensemble].map(&:to_f)
-      end
+      response.split(/\n/).map { |line| line.split(/\t/) }
     end
   end
 end
