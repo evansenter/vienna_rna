@@ -79,7 +79,7 @@ module ViennaRna
       ].compact.join(" ")
     end
     
-    def write_fa!(filename, comment = "")
+    def write_fa!(filename, comment = nil)
       filename.tap do |filename|
         File.open(filename, ?w) do |file|
           file.write("> %s\n" % comment) if comment
