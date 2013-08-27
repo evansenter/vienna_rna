@@ -54,6 +54,49 @@ module ViennaRna
           end
         end
         
+        def matrix_heatmap(x, y, z, title: nil, x_label: "Column index", y_label: "Row index", filename: false, num_colors: 64)
+          graph do |r|
+            if r.pull("ifelse('Matrix' %in% rownames(installed.packages()), 1, -1)") > 0
+              r.assign("matrix.i", x)
+              r.assign("matrix.j", y)
+              r.assign("matrix.x", z)
+              r.eval <<-STR
+                require("Matrix")
+                matrix.data <- sparseMatrix(
+                i      = matrix.i,
+                j      = matrix.j,
+                x      = matrix.x,
+                index1 = F
+                )
+              STR
+
+              if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
+                # r.eval <<-STR
+                #   pdf("#{filename}", 6, 6)
+                #   plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
+                #   dev.off()
+                # STR
+              else
+                r.eval <<-STR
+                  quartz("Heatmap", 6, 6)
+                  image(
+                    x    = 1:dim(matrix.data)[[1]], 
+                    y    = 1:dim(matrix.data)[[2]], 
+                    z    = as.matrix(matrix.data),
+                    col  = heat.colors(#{num_colors}),
+                    zlim = c(min(matrix.x), max(matrix.x)),
+                    xlab = "#{x_label}",
+                    ylab = "#{y_label}"
+                  )
+                  title("#{title || 'Matrix Heatmap'}")
+                STR
+              end
+            else
+              puts "Please install the Matrix package for R before using this function."
+            end
+          end
+        end
+        
         def roc(data, title = "", options = {})
           # data = [[true_score_1, true_score_2, ...], [false_score_1, false_score_2, ...]]
 
@@ -74,18 +117,6 @@ module ViennaRna
     
           # plot([{ x: roc_curve.map(&:first), y: roc_curve.map(&:last), style: "lines" }], options)
         end
-        
-        # def quick_plot(data, title = "", options = {})
-        #   quick_overlay([{ data: data }], title, options)
-        # end
-        
-        # def quick_overlay(data, title = "", options = {})
-        #   # [{ data: [[x_0, y_0], [x_1, y_1], ...], label: "Label" }, { data: [[x_0, y_0], [x_1, y_1], ...] }]
-        #   options[:plot] = ((options[:plot] || {}).merge(title: title))
-        #   options.merge!(output: "file") if options[:filename]
-          
-        #   plot(data.map { |hash| { title: hash[:label], x: hash[:data].map(&:first), y: hash[:data].map(&:last), style: "linespoints" }.merge(hash[:options] || {}) }, options)
-        # end
       end
     end
 

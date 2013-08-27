@@ -1,8 +1,8 @@
 Gem::Specification.new do |spec|
   spec.name        = "vienna_rna"
-  spec.version     = "0.6.0"
+  spec.version     = "0.7.0"
   spec.summary     = "Bindings to the Vienna RNA package."
-  spec.description = "A Ruby API for interacting with the Vienna RNA package."
+  spec.description = "A Ruby 2.0 API for interacting with the Vienna RNA package."
   spec.authors     = ["Evan Senter"]
   spec.email       = "evansenter@gmail.com"
   spec.files       = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md"]
