@@ -14,19 +14,24 @@ module ViennaRna
           graph do |r|
             r.assign("line_graph.x", data.map(&:first))
             r.assign("line_graph.y", data.map(&:last))
-
-            if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
-              r.eval <<-STR
-                pdf("#{filename}", 6, 6)
-                plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
-                dev.off()
-              STR
-            else
-              r.eval <<-STR
-                quartz("Histogram", 6, 6)
-                plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
-              STR
-            end
+            
+            r.eval("%s('%s', 6, 6)" % [
+              writing_file?(filename) ? "pdf" : "quartz", 
+              writing_file?(filename) ? filename : "Graph", 
+            ])
+            
+            r.eval <<-STR
+              plot(
+                line_graph.x, 
+                line_graph.y, 
+                xlab = "#{x_label}", 
+                ylab = "#{y_label}", 
+                main = "#{title || 'Line Graph'}", 
+                type = "#{type}"
+              )
+            STR
+            
+            r.eval("dev.off()") if writing_file?(filename)
           end
         end
         
@@ -38,25 +43,35 @@ module ViennaRna
           graph do |r|
             r.assign("histogram.data", data)
             r.assign("histogram.breaks", breaks)
-
-            if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
-              r.eval <<-STR
-                pdf("#{filename}", 6, 6)
-                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}", freq = #{relative ? 'FALSE' : 'TRUE'})
-                dev.off()
-              STR
-            else
-              r.eval <<-STR
-                quartz("Histogram", 6, 6)
-                hist(histogram.data, breaks = histogram.breaks, xlab = "#{x_label} (width: #{bin_size})", main = "#{title || 'Histogram'}", freq = #{relative ? 'FALSE' : 'TRUE'})
-              STR
-            end
+            
+            r.eval("%s('%s', 6, 6)" % [
+              writing_file?(filename) ? "pdf" : "quartz", 
+              writing_file?(filename) ? filename : "Histogram", 
+            ])
+            
+            r.eval <<-STR
+              hist(
+                histogram.data, 
+                breaks = histogram.breaks, 
+                xlab   = "#{x_label} (width: #{bin_size})", 
+                main   = "#{title || 'Histogram'}", 
+                freq   = #{relative ? 'FALSE' : 'TRUE'}
+              )
+            STR
+            
+            r.eval("dev.off()") if writing_file?(filename)
           end
         end
         
         def matrix_heatmap(x, y, z, title: nil, x_label: "Column index", y_label: "Row index", filename: false, num_colors: 64)
           graph do |r|
             if r.pull("ifelse('Matrix' %in% rownames(installed.packages()), 1, -1)") > 0
+              if forced_square = (x.max != y.max)
+                x << [x, y].map(&:max).max
+                y << [x, y].map(&:max).max
+                z << 0
+              end
+              
               r.assign("matrix.i", x)
               r.assign("matrix.j", y)
               r.assign("matrix.x", z)
@@ -69,24 +84,21 @@ module ViennaRna
                 index1 = F
                 )
               STR
-
-              if filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
-                # r.eval <<-STR
-                #   pdf("#{filename}", 6, 6)
-                #   plot(line_graph.x, line_graph.y, xlab = "#{x_label}", ylab = "#{y_label}", main = "#{title || 'Line Graph'}", type = "#{type}")
-                #   dev.off()
-                # STR
-              else
-                r.eval <<-STR
-                  quartz("Heatmap", 6, 6)
+              
+              generate_graph("Heatmap") do
+                <<-STR
+                  filtered.values <- Filter(function(i) { is.finite(i) & i != 0 }, matrix.x)
+                  print(apply(as.matrix(matrix.data), 2, rev))
+                  print(c(sort(filtered.values)[2], max(filtered.values)))
+                
                   image(
-                    x    = 1:dim(matrix.data)[[1]], 
-                    y    = 1:dim(matrix.data)[[2]], 
+                    x    = 1:max(c(dim(matrix.data)[[1]], dim(matrix.data)[[2]])), 
+                    y    = 1:max(c(dim(matrix.data)[[1]], dim(matrix.data)[[2]])), 
                     z    = as.matrix(matrix.data),
-                    col  = heat.colors(#{num_colors}),
-                    zlim = c(min(matrix.x), max(matrix.x)),
-                    xlab = "#{x_label}",
-                    ylab = "#{y_label}"
+                    col  = rev(heat.colors(#{num_colors})),
+                    zlim = #{forced_square ? "c(sort(filtered.values)[2], max(filtered.values))" : "c(min(filtered.values), max(filtered.values))"},
+                    xlab = "#{x_label} (1-indexed)",
+                    ylab = "#{y_label} (1-indexed)"
                   )
                   title("#{title || 'Matrix Heatmap'}")
                 STR
@@ -116,6 +128,25 @@ module ViennaRna
           # options.merge!({ plot: { title: "%s %s %.4f" % [title, "AUC:", area] } })
     
           # plot([{ x: roc_curve.map(&:first), y: roc_curve.map(&:last), style: "lines" }], options)
+        end
+        
+        private
+        
+        def generate_graph(window_title = "ViennaRNA Graph in R", &block)
+          r, filename = block.binding.eval("[r, filename]")
+          
+          r.eval("%s('%s', 6, 6)" % [
+            writing_file?(filename) ? "pdf" : "quartz", 
+            writing_file?(filename) ? filename : window_title, 
+          ])
+          
+          r.eval(yield)
+          
+          r.eval("dev.off()") if writing_file?(filename)
+        end
+        
+        def writing_file?(filename)
+          filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
         end
       end
     end
