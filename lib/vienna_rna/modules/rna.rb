@@ -40,6 +40,8 @@ module ViennaRna
           raw_data:         rna.raw_data
         )
       end
+      
+      alias_method :placeholder, :new
     end
     
     def initialize(sequence: "", structure: "", second_structure: "", raw_data: {})
@@ -70,14 +72,11 @@ module ViennaRna
     alias :str_1 :structure
     alias :str_2 :second_structure
     
-    def inspect
-      "#<%s>" % [
-        "#{self.class.name}",
-        ("#{seq[0, 20]   + (seq.length > 20   ? '...' : '')}"          if seq),
-        ("#{str_1[0, 20] + (str_1.length > 20 ? ' [truncated]' : '')}" if str_1),
-        ("#{str_2[0, 20] + (str_2.length > 20 ? ' [truncated]' : '')}" if str_2),
-      ].compact.join(" ")
+    def empty_structure
+      "." * seq.length
     end
+
+    alias :empty_str :empty_structure
     
     def write_fa!(filename, comment = nil)
       filename.tap do |filename|
@@ -102,10 +101,13 @@ module ViennaRna
       end
     end
 
-    def empty_structure
-      "." * seq.length
+    def inspect
+      "#<%s>" % [
+        "#{self.class.name}",
+        ("#{seq[0, 20]   + (seq.length > 20   ? '...' : '')}"          if seq && !seq.empty?),
+        ("#{str_1[0, 20] + (str_1.length > 20 ? ' [truncated]' : '')}" if str_1 && !str_1.empty?),
+        ("#{str_2[0, 20] + (str_2.length > 20 ? ' [truncated]' : '')}" if str_2 && !str_1.empty?),
+      ].compact.join(" ")
     end
-
-    alias :empty_str :empty_structure
   end
 end

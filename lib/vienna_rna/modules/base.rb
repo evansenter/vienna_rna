@@ -25,12 +25,13 @@ module ViennaRna
         new(data).run(flags)
       end
       
-      def bootstrap(data, output)
+      def bootstrap(data: nil, output: "")
         new(data).tap do |object|
-          object.instance_variable_set(:@response, output)
+          object.instance_variable_set(:@response, File.exist?(output) ? File.read(output).chomp : output)
         end
       end
       
+      # Time to redo batch stuff.
       def batch(fastas = [])
         ViennaRna::Batch.new(self, fastas).tap do |batch|
           if const_defined?(:Batch)
@@ -69,6 +70,7 @@ module ViennaRna
       when *(1..3).map { |i| [String] * i } then Rna.init_from_string(*data)
       when [Hash]                           then Rna.init_from_hash(*data)
       when [Array]                          then Rna.init_from_array(*data)
+      when [NilClass]                       then Rna.placeholder
       else raise TypeError.new("Unsupported ViennaRna::Rna#initialize format: #{data}")
       end
     end
