@@ -1,7 +1,6 @@
 module ViennaRna
   class Rna2dfold < EnergyGrid2d
     BASE_FLAGS = {
-      # P:         "/usr/local/bin/rna_turner1999.par",
       d:         0,
       p:         :empty,
       "-noBT" => :empty

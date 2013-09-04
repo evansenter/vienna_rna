@@ -1,8 +1,6 @@
 module ViennaRna
   class Fftbor2d < EnergyGrid2d
     BASE_FLAGS = {
-      # E: "/usr/local/bin/rna_turner1999.par",
-      P: 8,
       S: :empty
     }
 
