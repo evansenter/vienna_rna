@@ -11,7 +11,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency("bio",           [">= 1.4.2"])
   spec.add_dependency("activesupport", [">= 3.2"])
   spec.add_dependency("shuffle",       [">= 0.1.0"])
-  spec.add_dependency("gnuplot",       [">= 2.5.0"])
   spec.add_dependency("rinruby",       [">= 2.0.3"])
   spec.add_dependency("rroc",          [">= 0.1.1"])
 end
