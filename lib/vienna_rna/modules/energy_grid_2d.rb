@@ -28,7 +28,7 @@ module ViennaRna
       end
       
       def inspect
-        "#<Row2d (%d, %d), p: %+f, ensemble: %+f>" % [i, j, p, ensemble]
+        "#<Row2d (%d, %d), p: %s, ensemble: %s>" % [i, j, p, ensemble]
       end
     end
     
@@ -58,6 +58,10 @@ module ViennaRna
         y_label:    "Distance from structure 1",
         num_colors: num_colors
       )
+    end
+    
+    def inspect
+      "#<#{self.class.name} on #{data.inspect}>"
     end
   end
 end

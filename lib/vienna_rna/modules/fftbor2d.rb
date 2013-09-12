@@ -7,7 +7,7 @@ module ViennaRna
     self.executable_name = "FFTbor2D"
 
     def run_command(flags = {})
-      ViennaRna.debugger { "Running FFTbor2D on #{data.inspect}" }
+      ViennaRna.debugger { "Running #{exec_name} on #{data.inspect}" }
       
       "%s %s %s" % [
         exec_name, 
