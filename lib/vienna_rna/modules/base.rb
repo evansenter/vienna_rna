@@ -117,6 +117,10 @@ module ViennaRna
       %x[#{command}]
     end
     
+    def serialize
+      YAML.dump(self)
+    end
+    
     def debugger(&block)
       self.class.debugger(&block)
     end

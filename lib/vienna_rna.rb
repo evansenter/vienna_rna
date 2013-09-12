@@ -28,6 +28,10 @@ module ViennaRna
       end
     end
   end
+  
+  def self.deserialize(string)
+    YAML.load(File.exist?(string) ? File.read(string) : string)
+  end
 
   def self.debugger
     STDERR.puts yield if ViennaRna.debug
