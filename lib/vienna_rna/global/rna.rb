@@ -95,7 +95,7 @@ module ViennaRna
       end
 
       def run(module_name, options = {})
-        if rna_module = ViennaRna.const_missing("#{module_name}".camelize)
+        if rna_module = ViennaRna::Package.const_missing("#{module_name}".camelize)
           rna_module.run(self, options)
         else
           raise ArgumentError.new("#{module_name} can't be resolved as an executable")
