@@ -1,7 +1,7 @@
 module ViennaRna
   module Package
     class Xbor < Base
-      BASE_FLAGS = {
+      self.shared_flags = {
         E: "/usr/local/bin/energy.par"
       }
     
@@ -17,7 +17,7 @@ module ViennaRna
       
         "%s %s %s" % [
           exec_name, 
-          stringify_flags(BASE_FLAGS.merge(self.class.const_defined?(:FLAGS) ? self.class.const_get(:FLAGS) : {}).merge(flags)), 
+          stringify_flags(flags), 
           file.path
         ]
       end

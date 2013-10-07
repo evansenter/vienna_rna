@@ -2,6 +2,13 @@ module ViennaRna
   module Package
     class Base
       class_attribute :executable_name
+      self.executable_name = ->(context) { "RNA#{context.class.name.split('::').last.underscore}" }
+      
+      class_attribute :call_with
+      self.call_with = [:seq]
+      
+      class_attribute :default_flags
+      self.default_flags = {}
     
       class << self
         def method_added(name)
@@ -34,20 +41,7 @@ module ViennaRna
       attr_reader :data, :response, :runtime
     
       def exec_name
-        if executable_name
-          executable_name.respond_to?(:call) ? self.class.module_exec(&executable_name) : executable_name
-        else
-          "RNA#{self.class.name.split('::').last.underscore}"
-        end
-      end
-    
-      def exec_sequence_format
-        if data.str
-          '"%s
-          %s"' % [data.seq, data.str]
-        else
-          data.seq
-        end
+        executable_name.respond_to?(:call) ? executable_name[self] : executable_name
       end
     
       def initialize(data)
@@ -86,9 +80,7 @@ module ViennaRna
       end
     
       def stringify_flags(flags)
-        base_flags = self.class.const_defined?(:BASE_FLAGS) ? self.class.const_get(:BASE_FLAGS) : {}
-      
-        flags.merge(base_flags).inject("") do |string, (flag, value)| 
+        flags.merge(default_flags).inject("") do |string, (flag, value)| 
           (string + (value == :empty ? " -%s" % flag : " -%s %s" % [flag, value])).strip
         end
       end
@@ -97,7 +89,11 @@ module ViennaRna
         command = if respond_to?(:run_command)
           method(:run_command).arity.zero? ? run_command : run_command(flags)
         else
-          "echo #{exec_sequence_format} | #{exec_name} #{stringify_flags(flags)}"
+          "echo %s | %s %s" % [
+            "'%s'" % call_with.map { |datum| data.send(datum) }.join(?\n),
+            exec_name,
+            stringify_flags(flags)
+          ]
         end
       
         ViennaRna.debugger { command }

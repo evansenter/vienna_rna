@@ -1,7 +1,7 @@
 module ViennaRna
   module Package
     class Fftbor2d < EnergyGrid2d
-      BASE_FLAGS = {
+      self.default_flags = {
         S: :empty
       }
 
@@ -12,7 +12,7 @@ module ViennaRna
       
         "%s %s %s" % [
           exec_name, 
-          stringify_flags(BASE_FLAGS.merge(self.class.const_defined?(:FLAGS) ? self.class.const_get(:FLAGS) : {}).merge(flags)), 
+          stringify_flags(flags), 
           data.temp_fa_file!
         ]
       end

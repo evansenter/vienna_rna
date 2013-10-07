@@ -1,7 +1,7 @@
 module ViennaRna
   module Package
     class Rna2dfold < EnergyGrid2d
-      BASE_FLAGS = {
+      self.shared_flags = {
         d:         0,
         p:         :empty,
         "-noBT" => :empty
@@ -12,10 +12,10 @@ module ViennaRna
       def run_command(flags = {})
         ViennaRna.debugger { "Running RNA2Dfold on #{data.inspect}" }
       
-        "cat %s  | %s %s" % [
+        "cat %s | %s %s" % [
           data.temp_fa_file!,
           exec_name, 
-          stringify_flags(BASE_FLAGS.merge(self.class.const_defined?(:FLAGS) ? self.class.const_get(:FLAGS) : {}).merge(flags))
+          stringify_flags(flags)
         ]
       end
     

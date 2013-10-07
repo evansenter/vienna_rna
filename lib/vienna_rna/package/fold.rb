@@ -1,7 +1,7 @@
 module ViennaRna
   module Package
     class Fold < Base
-      BASE_FLAGS = {
+      self.default_flags = {
         "-noPS" => :empty
       }
     
