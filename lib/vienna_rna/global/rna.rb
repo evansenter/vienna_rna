@@ -46,7 +46,7 @@ module ViennaRna
       end
     
       def initialize(sequence: "", structure: "", second_structure: "", raw_data: {})
-        @sequence, @raw_data = sequence, raw_data
+        @sequence, @raw_data = sequence.kind_of?(Rna) ? sequence.seq : sequence, raw_data
       
         [:structure, :second_structure].each do |structure_symbol|
           instance_variable_set(
@@ -55,6 +55,12 @@ module ViennaRna
             when :empty then empty_structure
             when :mfe   then RNA(sequence).run(:fold).mfe_rna.structure
             when String then structure_value
+            when Hash   then 
+              if structure_value.keys.count > 1
+                ViennaRna.debugger { "The following options hash has more than one key. This will probably produce unpredictable results: %s" % structure_value.inspect }
+              end
+              
+              RNA(sequence).run(*structure_value.keys, *structure_value.values).mfe_rna.structure
             end
           )
         end

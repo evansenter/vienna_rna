@@ -26,7 +26,7 @@ module ViennaRna
             
             r.assign("legend.titles", data.each_with_index.map { |hash, index| hash[:legend] || "Line #{index + 1}" })
             r.eval("line.colors <- rainbow(%d)" % data.size)
-            r.eval("plot(0, 0, type = 'n', cex = .75, xlab = '', ylab = '', xlim = c(%d, %d), ylim = c(%d, %d))" % [
+            r.eval("plot(0, 0, type = 'n', cex = .75, cex.axis = .9, xlab = '', ylab = '', xlim = c(%d, %d), ylim = c(%d, %d))" % [
               x_range.min, x_range.max, y_range.min, y_range.max
             ])
             
@@ -47,9 +47,11 @@ module ViennaRna
             
             r.eval <<-STR
               title(
-                xlab = "#{x_label}", 
-                ylab = "#{y_label}", 
-                main = "#{title || 'Line Graph'}"
+                xlab     = "#{x_label}", 
+                ylab     = "#{y_label}", 
+                main     = "#{title || 'Line Graph'}",
+                cex.main = .9,
+                cex.lab  = .9
               )
             STR
               
@@ -61,7 +63,8 @@ module ViennaRna
                   bty = "n",
                   col = line.colors,
                   lty = rep(1, #{data.size}),
-                  pch = 0:#{data.size}
+                  pch = 0:#{data.size},
+                  cex = .9
                 )
               STR
             end
@@ -74,10 +77,10 @@ module ViennaRna
           overlay([{ data: data }], title: title, type: type, x_label: x_label, y_label: y_label, legend: false, filename: filename)
         end
         
-        def histogram(data, title: nil, x_label: "Bins", bin_size: 1, relative: false, filename: false)
+        def histogram(data, title: nil, x_label: "Bins", num_bins: false, bin_size: 1, x_arrow: false, relative: false, filename: false)
           half     = bin_size / 2.0
           range    = Range.new((data.min - half).floor, (data.max + half).ceil)
-          breaks   = (range.min + half).step(range.max + half, bin_size).to_a
+          breaks   = num_bins ? num_bins : (range.min + half).step(range.max + half, bin_size).to_a
           
           graph do |r|
             r.assign("histogram.data", data)
@@ -91,12 +94,17 @@ module ViennaRna
             r.eval <<-STR
               hist(
                 histogram.data, 
-                breaks = histogram.breaks, 
-                xlab   = "#{x_label} (width: #{bin_size})", 
-                main   = "#{title || 'Histogram'}", 
-                freq   = #{relative ? 'FALSE' : 'TRUE'}
+                breaks   = histogram.breaks, 
+                xlab     = "#{x_label}", 
+                main     = "#{title || 'Histogram'}", 
+                freq     = #{relative ? 'F' : 'T'},
+                cex.main = 0.9,
+                cex.lab  = 0.9,
+                cex.axis = 0.9
               )
             STR
+            
+            r.eval("abline(v = #{x_arrow}, lty = 'dashed')") if x_arrow
             
             r.eval("dev.off()") if writing_file?(filename)
           end
