@@ -21,6 +21,7 @@ require "vienna_rna/package/base"
 begin; R.quit; rescue IOError; end
 
 module ViennaRna
+  RT     = 1e-3 * 1.9872041 * (273.15 + 37) # kcal / K / mol @ 37C
   @debug = true
   
   module Package
