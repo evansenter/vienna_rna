@@ -1,11 +1,11 @@
 module ViennaRna
   module Package
     class Xbor < Base
-      self.shared_flags = {
+      self.default_flags = {
         E: "/usr/local/bin/energy.par"
       }
     
-      self.executable_name = -> { name.demodulize.gsub(/^([A-Z].*)bor$/) { |match| $1.upcase + "bor" } }
+      self.executable_name = ->(context) { context.class.name.demodulize.gsub(/^([A-Z].*)bor$/) { |match| $1.upcase + "bor" } }
     
       def run_command(flags = {})
         file = Tempfile.new("rna")
