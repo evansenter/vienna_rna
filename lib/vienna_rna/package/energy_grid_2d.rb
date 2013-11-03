@@ -27,6 +27,10 @@ module ViennaRna
         def <=>(other_row)
           i == other_row.i ? j <=> other_row.j : i <=> other_row.i
         end
+        
+        def to_csv(energy_term: :p)
+          "%d,%d,%.8f" % [i, j, instance_variable_get(:"@#{energy_term}")]
+        end
       
         def inspect
           "#<Row2d (%d, %d), p: %s, ensemble: %s>" % [i, j, p, ensemble]
@@ -59,6 +63,14 @@ module ViennaRna
           y_label:    "Distance from structure 1",
           num_colors: num_colors
         )
+      end
+      
+      def to_csv(energy_term: :p)
+        map { |row| row.to_csv(energy_term: energy_term) }.join(?\n) + ?\n
+      end
+      
+      def to_csv!(filename, energy_term: :p)
+        File.open(filename, ?w) { |file| file.write(to_csv(energy_term: energy_term)) }
       end
     
       def inspect

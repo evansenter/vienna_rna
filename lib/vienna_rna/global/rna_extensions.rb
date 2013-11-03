@@ -43,10 +43,6 @@ module ViennaRna
         def gc_content
           seq.split(//).select { |i| i =~ /[GC]/i }.size.to_f / seq.size
         end
-        
-        def mfpt_from_fftbor2d
-          run(:fftbor2d, X: :empty).response.to_f
-        end
       end
     
       module OneStructureBasedMethods

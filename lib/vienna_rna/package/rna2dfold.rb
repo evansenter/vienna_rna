@@ -1,7 +1,7 @@
 module ViennaRna
   module Package
     class Rna2dfold < EnergyGrid2d
-      self.shared_flags = {
+      self.default_flags = {
         d:         0,
         p:         :empty,
         "-noBT" => :empty

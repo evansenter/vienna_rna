@@ -77,6 +77,10 @@ module ViennaRna
           overlay([{ data: data }], title: title, type: type, x_label: x_label, y_label: y_label, legend: false, filename: filename)
         end
         
+        def scatterplot(data, title: nil, x_label: "Independent", y_label: "Dependent", filename: false)
+          line_graph(data, title: title, type: ?p, x_label: x_label, y_label: y_label, filename: filename)
+        end
+        
         def histogram(data, title: nil, x_label: "Bins", num_bins: false, bin_size: 1, x_arrow: false, relative: false, filename: false)
           half     = bin_size / 2.0
           range    = Range.new((data.min - half).floor, (data.max + half).ceil)

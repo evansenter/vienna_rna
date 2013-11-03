@@ -1,10 +1,6 @@
 module ViennaRna
   module Package
     class Fftbor2d < EnergyGrid2d
-      self.default_flags = {
-        S: :empty
-      }
-
       self.executable_name = "FFTbor2D"
 
       def run_command(flags = {})
@@ -12,7 +8,7 @@ module ViennaRna
       
         "%s %s %s" % [
           exec_name, 
-          stringify_flags(flags), 
+          stringify_flags(flags.merge((flags.keys & %i|X M S|).empty? ? { S: :empty } : {})), 
           data.temp_fa_file!
         ]
       end
