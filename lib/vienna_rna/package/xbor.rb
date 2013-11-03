@@ -7,7 +7,7 @@ module ViennaRna
     
       self.executable_name = ->(context) { context.class.name.demodulize.gsub(/^([A-Z].*)bor$/) { |match| $1.upcase + "bor" } }
     
-      def run_command(flags = {})
+      def run_command(flags)
         file = Tempfile.new("rna")
         file.write("%s\n" % data.seq)
         file.write("%s\n" % data.str)

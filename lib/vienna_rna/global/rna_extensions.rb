@@ -89,20 +89,6 @@ module ViennaRna
         
           ((bp_set_1 - bp_set_2) + (bp_set_2 - bp_set_1)).count
         end
-      
-        def symmetric_bp_distance(structure_1, structure_2)
-          # Takes two structures and calculates the distance between them by: sum { ((x_j - x_i) - (y_j - y_i)).abs }
-          raise "The two structures are not the same length" unless structure_1.length == structure_2.length
-  
-          bp_dist = ->(array, i) { array[i] == -1 ? 0 : array[i] - i }
-  
-          structure_1_pairings = get_pairings(structure_1)
-          structure_2_pairings = get_pairings(structure_2)
-  
-          structure_1.length.times.inject(0) do |distance, i|
-            distance + (bp_dist[structure_1_pairings, i] - bp_dist[structure_2_pairings, i]).abs
-          end
-        end
       end
     end
   end

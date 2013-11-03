@@ -16,16 +16,6 @@ module ViennaRna
           @mfe_rna, @structure, @mfe = RNA.from_string(data.seq, structure), structure, ViennaRna::Global::Parser.rnafold_mfe(@response)
         end
       end
-    
-      module Batch
-        def with_different_structures
-          run.inject(Hash.new { |hash, key| hash[key] = [] }) do |hash, folded_sequence|
-            hash.tap do
-              hash[folded_sequence.structure] << folded_sequence
-            end
-          end.values.map(&:first)
-        end
-      end
     end
   end
 end

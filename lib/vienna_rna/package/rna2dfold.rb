@@ -9,7 +9,7 @@ module ViennaRna
 
       self.executable_name = "RNA2Dfold"
 
-      def run_command(flags = {})
+      def run_command(flags)
         ViennaRna.debugger { "Running RNA2Dfold on #{data.inspect}" }
       
         "cat %s | %s %s" % [

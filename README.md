@@ -20,3 +20,18 @@ Simple use case:
     #=> echo CCUCGAGGGGAACCCGAAAGGGACCCGAGAGG | rnafold --noPS
     #=> Total runtime: 0.013 sec.
     #=> #<ViennaRna::Rna CCUCGAGGGGAACCCGAAAG... ((((..(((...(((....) [truncated]>
+
+... and now you can even do crazy stuff like this (taking a sequence, inferring the MFE, calculating the 2D energy landscape and computing the MFPT by chaining commands)!
+
+    RNA("GGGGGCCCCC", :empty, fold: { d: 0 }).run(:fftbor2d).chain(:mfpt).mfpt
+    #=> ViennaRna::Package::Fold: {"-noPS"=>:empty, :d=>0}
+    #=> echo 'GGGGGCCCCC' | RNAfold --noPS -d 0
+    #=> Total runtime: 0.014 sec.
+    #=> ViennaRna::Package::Fftbor2d: {:S=>:empty}
+    #=> Running FFTbor2D on #<ViennaRna::Global::Rna GGGGGCCCCC .......... (((....)))>
+    #=> FFTbor2D -S /var/folders/_2/0js_xvm95zz8jv0lxlh8p__40000gn/T/rna20131103-7845-1ok9xnt
+    #=> Total runtime: 0.041 sec.
+    #=> ViennaRna::Package::Mfpt: {:X=>:empty, :H=>:empty, :N=>10, :Q=>"1e-8"}
+    #=> RNAmfpt -X -H -N 10 -Q 1e-8 /var/folders/_2/0js_xvm95zz8jv0lxlh8p__40000gn/T/rna20131103-7845-1h1uz0l
+    #=> Total runtime: 0.012 sec.
+    #=> 2160.58769316

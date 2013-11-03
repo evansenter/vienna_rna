@@ -97,15 +97,11 @@ module ViennaRna
       end
     
       def temp_fa_file!
-        write_fa!(Tempfile.new("")).path
+        write_fa!(Tempfile.new("rna")).path
       end
 
-      def run(module_name, options = {})
-        if rna_module = ViennaRna::Package.const_missing("#{module_name}".camelize)
-          rna_module.run(self, options)
-        else
-          raise ArgumentError.new("#{module_name} can't be resolved as an executable")
-        end
+      def run(package_name, options = {})
+        ViennaRna::Package.lookup(package_name).run(self, options)
       end
 
       def inspect

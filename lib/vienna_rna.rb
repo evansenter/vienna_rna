@@ -1,20 +1,18 @@
 require "benchmark"
 require "set"
-require "bio"
 require "shuffle"
-require "matrix"
 require "rinruby"
-require "rroc"
 require "tempfile"
 require "bigdecimal"
 require "diverge"
 require "active_support/inflector"
 require "active_support/core_ext/class"
-require "active_support/core_ext/module/aliasing"
 
 require "vienna_rna/global/rna_extensions"
 require "vienna_rna/global/rna"
 require "vienna_rna/global/parser"
+require "vienna_rna/global/run_extensions"
+require "vienna_rna/global/chain_extensions"
 require "vienna_rna/graphing/r"
 require "vienna_rna/package/base"
 
@@ -26,7 +24,6 @@ module ViennaRna
   
   module Package
     Dir[File.join(File.dirname(__FILE__), "vienna_rna", "package", "*.rb")].reject { |file| file =~ /\/base.rb/ }.each do |file|
-      # Doesn't support autoloading modules that are of the form: TwoWords
       autoload(File.basename(file, ".rb").camelize.to_sym, "vienna_rna/package/#{File.basename(file, '.rb')}")
     end
     
