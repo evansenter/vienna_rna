@@ -8,7 +8,7 @@ module ViennaRna
       
       module ClassMethods
         def exec_exists?(name)
-          !%x[which RNA#{name.to_s.downcase}].empty?
+          !%x[which RNA#{name.to_s.downcase}].empty? || !%x[which #{name.to_s.downcase}].empty?
         end
         
         def run(*data)
