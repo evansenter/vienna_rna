@@ -81,6 +81,20 @@ module ViennaRna
           line_graph(data, title: title, type: ?p, x_label: x_label, y_label: y_label, filename: filename)
         end
         
+        def roc(data, title: nil, filename: false)
+          # data: [[-0.894, 1.0], [-0.950, 1.0], [0.516, -1.0], ..., [0.815, -1.0], [0.740, -1.0]]
+          auc            = ROC.auc(data)
+          title_with_auc = title ? "%s (AUC: %.4f)" % [title, auc] : "AUC: %.4f" % auc
+          overlay(
+            [{ data: ROC.curve_points(data) }, { data: [[0, 0], [1, 1]] }], 
+            title:    title_with_auc, 
+            x_label:  "False positive rate", 
+            y_label:  "True positive rate", 
+            legend:   false, 
+            filename: filename
+          )
+        end
+        
         def histogram(data, title: nil, x_label: "Bins", num_bins: false, bin_size: 1, x_arrow: false, relative: false, filename: false)
           half     = bin_size / 2.0
           range    = Range.new((data.min - half).floor, (data.max + half).ceil)
@@ -158,27 +172,6 @@ module ViennaRna
               puts "Please install the Matrix package for R before using this function."
             end
           end
-        end
-        
-        def roc(data, title = "", options = {})
-          # data = [[true_score_1, true_score_2, ...], [false_score_1, false_score_2, ...]]
-
-          if R.pull("ifelse('ROCR' %in% rownames(installed.packages()), 1, -1)") > 0
-
-          else
-            puts "Please install the ROCR package for R before using this function."
-          end
-
-          # roc_curve = ROC.curve_points({ 1 => data[0], -1 => data[1] }.inject([]) { |data, (truth, values)| data.concat(values.map { |i| [i, truth] })})
-          # area      = roc_curve.each_cons(2).inject(0) do |sum, (a, b)| 
-          #   delta_x, delta_y = b[0] - a[0], b[1] - a[1]
-          #   sum + (delta_x * delta_y / 2 + delta_x * [a[1], b[1]].min)
-          # end
-          
-          # options.merge!(output: "file") if options[:filename]
-          # options.merge!({ plot: { title: "%s %s %.4f" % [title, "AUC:", area] } })
-    
-          # plot([{ x: roc_curve.map(&:first), y: roc_curve.map(&:last), style: "lines" }], options)
         end
         
         private

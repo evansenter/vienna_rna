@@ -4,7 +4,7 @@ require "shuffle"
 require "rinruby"
 require "tempfile"
 require "bigdecimal"
-require "diverge"
+require "rroc"
 require "active_support/inflector"
 require "active_support/core_ext/class"
 
