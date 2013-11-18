@@ -81,7 +81,7 @@ module ViennaRna
           line_graph(data, title: title, type: ?p, x_label: x_label, y_label: y_label, filename: filename)
         end
         
-        def roc(data, title: nil, filename: false)
+        def roc(data, title: nil, baseline: true, filename: false)
           # data: [[-0.894, 1.0], [-0.950, 1.0], [0.516, -1.0], ..., [0.815, -1.0], [0.740, -1.0]]
           auc            = ROC.auc(data)
           title_with_auc = title ? "%s (AUC: %.4f)" % [title, auc] : "AUC: %.4f" % auc
@@ -91,6 +91,32 @@ module ViennaRna
             x_label:  "False positive rate", 
             y_label:  "True positive rate", 
             legend:   false, 
+            filename: filename
+          )
+        end
+        
+        def roc_overlay(data, title: nil, auc_in_legend: true, filename: false)
+          # [{ data: [[-0.894, 1.0], [-0.950, 1.0], [0.516, -1.0], ..., [0.815, -1.0], [0.740, -1.0]], legend: "ROC 1" }, ...]
+          formatted_data = data.map do |hash|
+            curve_points = ROC.curve_points(hash[:data])
+            
+            if auc_in_legend
+              auc    = ROC.auc(hash[:data])
+              legend = hash[:legend] ? "%s (AUC: %.4f)" % [hash[:legend], auc] : "AUC: %.4f" % auc
+              
+              hash.merge({ data: curve_points, legend: legend })
+            else
+              hash.merge({ data: curve_points })
+            end
+          end
+          
+          
+          overlay(
+            formatted_data, 
+            title:    title, 
+            x_label:  "False positive rate", 
+            y_label:  "True positive rate", 
+            legend:   "bottomright", 
             filename: filename
           )
         end
