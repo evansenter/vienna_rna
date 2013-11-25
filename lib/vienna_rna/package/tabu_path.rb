@@ -42,7 +42,7 @@ module ViennaRna
         end
         
         def inspect
-          "#<#{self.class.name} with barrier %f and length %d on #{data.inspect}>" % [barrier, best_weight]
+          "#<#{self.class.name} with barrier %f and length %d on #{rna.inspect}>" % [barrier, best_weight]
         end
       end
     end
