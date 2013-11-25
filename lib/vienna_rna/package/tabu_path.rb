@@ -40,6 +40,10 @@ module ViennaRna
         def full_path?
           rna.str_1 == path.first && rna.str_2 == path.last
         end
+        
+        def inspect
+          "#<#{self.class.name} with barrier %f and length %d on #{data.inspect}>" % [barrier, best_weight]
+        end
       end
     end
   end
