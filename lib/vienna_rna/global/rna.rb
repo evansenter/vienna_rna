@@ -3,6 +3,7 @@ module ViennaRna
     class Rna
       include RnaExtensions
     
+      attr_accessor :comment
       attr_reader :sequence, :structure, :second_structure, :raw_data
       
       class << self
@@ -19,6 +20,7 @@ module ViennaRna
             sequence:         hash[:sequence]         || hash[:seq], 
             structure:        hash[:structure]        || hash[:str_1] || hash[:str], 
             second_structure: hash[:second_structure] || hash[:str_2], 
+            comment:          hash[:comment]          || hash[:name], 
             raw_data:         hash
           )
         end
@@ -28,8 +30,18 @@ module ViennaRna
         end
       
         def init_from_fasta(string)
-          string = File.read(string).chomp if File.exist?(string)
-          init_from_string(*string.split(/\n/).reject { |line| line.start_with?(">") }[0, 3])
+          if File.exist?(string)
+            comment = File.basename(string, string.include?(?.) ? ".%s" % string.split(?.)[-1] : "")
+            string  = File.read(string).chomp
+          end
+          
+          init_from_string(*string.split(/\n/).reject { |line| line.start_with?(">") }[0, 3]).tap do |rna|
+            if (line = string.split(/\n/).first).start_with?(">") && !(file_comment = line.gsub(/^>\s*/, "")).empty?
+              rna.comment = file_comment
+            elsif comment
+              rna.comment = comment
+            end
+          end
         end
     
         def init_from_self(rna)
@@ -38,6 +50,7 @@ module ViennaRna
             sequence:         rna.sequence, 
             strucutre:        rna.structure, 
             second_strucutre: rna.second_structure, 
+            comment:          rna.comment, 
             raw_data:         rna.raw_data
           )
         end
@@ -45,8 +58,8 @@ module ViennaRna
         alias_method :placeholder, :new
       end
     
-      def initialize(sequence: "", structure: "", second_structure: "", raw_data: {})
-        @sequence, @raw_data = sequence.kind_of?(Rna) ? sequence.seq : sequence, raw_data
+      def initialize(sequence: "", structure: "", second_structure: "", comment: "", raw_data: {})
+        @sequence, @comment, @raw_data = sequence.kind_of?(Rna) ? sequence.seq : sequence, comment, raw_data
       
         [:structure, :second_structure].each do |structure_symbol|
           instance_variable_set(
@@ -78,6 +91,7 @@ module ViennaRna
       alias :str   :structure
       alias :str_1 :structure
       alias :str_2 :second_structure
+      alias :name  :comment
     
       def empty_structure
         "." * seq.length
@@ -85,13 +99,13 @@ module ViennaRna
 
       alias :empty_str :empty_structure
     
-      def write_fa!(filename, comment = nil)
+      def write_fa!(filename)
         filename.tap do |filename|
           File.open(filename, ?w) do |file|
-            file.write("> %s\n" % comment) if comment
-            file.write("%s\n" % seq)       if seq
-            file.write("%s\n" % str_1)     if str_1
-            file.write("%s\n" % str_2)     if str_2
+            file.write("> %s\n" % name) if name
+            file.write("%s\n" % seq)    if seq
+            file.write("%s\n" % str_1)  if str_1
+            file.write("%s\n" % str_2)  if str_2
           end
         end
       end
@@ -105,12 +119,12 @@ module ViennaRna
       end
 
       def inspect
-        "#<%s>" % [
-          "#{self.class.name}",
-          ("#{seq[0, 20]   + (seq.length > 20   ? '...' : '')}"          if seq && !seq.empty?),
-          ("#{str_1[0, 20] + (str_1.length > 20 ? ' [truncated]' : '')}" if str_1 && !str_1.empty?),
-          ("#{str_2[0, 20] + (str_2.length > 20 ? ' [truncated]' : '')}" if str_2 && !str_1.empty?),
-        ].compact.join(" ")
+        "#<RNA: %s>" % [
+          ("#{seq[0, 20]   + (seq.length > 20   ? '... [%d]' % seq.length : '')}" if seq   && !seq.empty?),
+          ("#{str_1[0, 20] + (str_1.length > 20 ? ' [%d]'    % seq.length : '')}" if str_1 && !str_1.empty?),
+          ("#{str_2[0, 20] + (str_2.length > 20 ? ' [%d]'    % seq.length : '')}" if str_2 && !str_1.empty?),
+          (!name.empty? ? name : "#{self.class.name}")
+        ].compact.join(", ")
       end
     end
   end

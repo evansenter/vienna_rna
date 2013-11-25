@@ -63,6 +63,10 @@ unless defined? RNA
 end
 
 module RNA
+  def self.random(size, *args)
+    RNA.from_array(args.unshift(ViennaRna::Global::Rna.generate_sequence(size).seq))
+  end
+  
   def self.method_missing(name, *args, &block)
     if "#{name}" =~ /^from_\w+$/
       ViennaRna::Global::Rna.send("init_#{name}", *args)

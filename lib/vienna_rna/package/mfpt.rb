@@ -1,8 +1,10 @@
+# Maybe add something like flagsets so that common option groups can be combined together.
+
 module ViennaRna
   module Package
     class Mfpt < Base
       self.chains_from   = ViennaRna::Package::EnergyGrid2d
-      self.default_flags = ->(context, flags) { { X: :empty, H: :empty, N: context.data.seq.length, Q: "1e-8" } }
+      self.default_flags = ->(context, flags) { { X: :empty, H: :empty, N: context.data.seq.length, D: context.data.bp_distance, Q: "1e-8" } }
       # These flags aren't well setup for alternative options at the moment.
       
       attr_reader :mfpt
@@ -10,11 +12,13 @@ module ViennaRna
       def transform_for_chaining(previous_package)
         previous_package.data.tap do |data|
           data.instance_eval do
-            @energy_grid_csv = Tempfile.new("rna").path.tap do |energy_grid_csv|
-              previous_package.to_csv!(energy_grid_csv)
+            @previous_package = previous_package
+            
+            def energy_grid_csv
+              Tempfile.new("rna").path.tap do |energy_grid_csv|
+                @previous_package.to_csv!(energy_grid_csv)
+              end
             end
-          
-            def energy_grid_csv; @energy_grid_csv; end
           end
         end
       end

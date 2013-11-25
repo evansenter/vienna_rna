@@ -17,7 +17,7 @@ module ViennaRna
             raise ArgumentError.new("#{class_chaining_to.name} doesn't support chaining because it doesn't define transform_for_chaining")
           end
           
-          unless [chains_from].flatten.any? { |chaining_from| kind_of?(chaining_from) }
+          unless [chains_from].flatten.any?(&method(:kind_of?))
             raise ArgumentError.new("#{class_chaining_to.name} doesn't support chaining from #{self.class.name} because it isn't in the chains_from list")
           end
           

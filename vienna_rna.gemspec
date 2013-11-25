@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name        = "vienna_rna"
-  spec.version     = "0.10.1"
+  spec.version     = "0.11.0"
   spec.summary     = "Bindings to the Vienna RNA package, and other major command line utilities for RNA."
   spec.description = "A Ruby 2.0 API for interacting with command line tools involving RNA molecules through a standard interface."
   spec.authors     = ["Evan Senter"]
