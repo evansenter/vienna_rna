@@ -1,4 +1,5 @@
 # Maybe add something like flagsets so that common option groups can be combined together.
+# Also, add a rerun feature.
 
 module ViennaRna
   module Package
@@ -32,7 +33,7 @@ module ViennaRna
       end
     
       def post_process
-        @mfpt = @response.to_f
+        @mfpt = response.to_f
       end
     end
   end

@@ -21,7 +21,7 @@ module ViennaRna
       end
     
       def post_process
-        @paths = @response.split(data.str_1 + ?\n).reject(&:empty?).map { |path_string| Path.new(data, path_string) }
+        @paths = response.split(data.str_1 + ?\n).reject(&:empty?).map { |path_string| Path.new(data, path_string) }
       end
       
       class Path

@@ -24,11 +24,12 @@ module ViennaRna
         def bootstrap(data: nil, output: "")
           new(data).tap do |object|
             object.instance_variable_set(:@response, File.exist?(output) ? File.read(output).chomp : output)
+            object.post_process if object.respond_to?(:post_process)
           end
         end
       end
     
-      attr_reader :data, :response, :runtime
+      attr_reader :data, :flags, :response, :runtime
     
       def initialize(data, chaining: false)
         unless chaining
@@ -53,6 +54,16 @@ module ViennaRna
     
       def debugger(&block)
         self.class.debugger(&block)
+      end
+      
+      def inspect
+        "#<%s (%.2f sec): data: %s, flags: %s, vars: %s>" % [
+          self.class.name,
+          runtime.real,
+          data,
+          flags,
+          (instance_variables - %i|@data @flags @response @runtime|).map(&:to_s).sort.join(", ")
+        ]
       end
     end
   end

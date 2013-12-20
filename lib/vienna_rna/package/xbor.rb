@@ -2,7 +2,7 @@ module ViennaRna
   module Package
     class Xbor < Base
       self.default_flags = {
-        E: "/usr/local/bin/energy.par"
+        E: "/usr/local/bin/rna_turner2004.par"
       }
     
       self.executable_name = ->(context) { context.class.name.demodulize.gsub(/^([A-Z].*)bor$/) { |match| $1.upcase + "bor" } }
@@ -22,14 +22,6 @@ module ViennaRna
         ]
       end
     
-      def self.bootstrap_from_file(path, klass = self)
-        log       = File.read(path)
-        sequence  = log.split(/\n/).first.split(/\s+/)[1]
-        structure = log.split(/\n/).first.split(/\s+/)[2]
-      
-        klass.bootstrap(data: RNA.from_string(sequence, structure), output: log)
-      end
-    
       def self.parse(response)
         response.split(/\n/).select { |line| line =~ /^\d+\t-?\d+/ }.map { |line| line.split(/\t/) }
       end
@@ -46,12 +38,20 @@ module ViennaRna
       def expected_k
         k_p_points.map { |array| array.inject(&:*) }.inject(&:+)
       end
+      
+      def to_csv
+        k_p_points.map { |k, p| "%d,%.8f" % [k, p] }.join(?\n) + ?\n
+      end
+      
+      def to_csv!(filename)
+        File.open(filename, ?w) { |file| file.write(to_csv) }
+      end
     
-      def quick_plot(options = {})
-        ViennaRna::Graphing::Gnuplot.quick_plot(
+      def quick_plot(filename: false)
+        ViennaRna::Graphing::R.line_graph(
           k_p_points,
-          options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure],
-          options
+          title:    options[:title] || "%s\\n%s\\n%s" % [self.class.name, data.seq, data.safe_structure],
+          filename: false
         )
       end
     

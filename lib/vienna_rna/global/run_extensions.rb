@@ -19,7 +19,7 @@ module ViennaRna
       
       module InstanceMethods
         def run(flags = {})
-          unless @response
+          unless response
             tap do
               @runtime = Benchmark.measure do
                 pre_run_check
@@ -77,7 +77,9 @@ module ViennaRna
     
         def stringify_flags(flags)
           flags.inject("") do |string, (flag, value)| 
-            (string + (value == :empty ? " -%s" % flag : " -%s %s" % [flag, value])).strip
+            (string + (value == :empty || value.class == TrueClass ? " -%s" % flag : " -%s %s" % [flag, value])).strip
+          end.tap do
+            @flags = flags
           end
         end
       end

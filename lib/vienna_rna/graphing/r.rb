@@ -47,9 +47,9 @@ module ViennaRna
             
             r.eval <<-STR
               title(
-                xlab     = "#{x_label}", 
-                ylab     = "#{y_label}", 
-                main     = "#{title || 'Line Graph'}",
+                xlab     = #{expressionify(x_label)}, 
+                ylab     = #{expressionify(y_label)}, 
+                main     = #{expressionify(title || "Line Graph")},
                 cex.main = .9,
                 cex.lab  = .9
               )
@@ -60,11 +60,12 @@ module ViennaRna
                 legend(
                   "#{legend}",
                   legend.titles,
-                  bty = "n",
+                  bty = "o",
+                  bg  = rgb(1, 1, 1, .5, 1),
                   col = line.colors,
                   lty = rep(1, #{data.size}),
                   pch = 0:#{data.size},
-                  cex = .9
+                  cex = .6
                 )
               STR
             end
@@ -139,8 +140,8 @@ module ViennaRna
               hist(
                 histogram.data, 
                 breaks   = histogram.breaks, 
-                xlab     = "#{x_label}", 
-                main     = "#{title || 'Histogram'}", 
+                xlab     = #{expressionify(x_label)}, 
+                main     = #{expressionify(title || "Histogram")}, 
                 freq     = #{relative ? 'F' : 'T'},
                 cex.main = 0.9,
                 cex.lab  = 0.9,
@@ -191,7 +192,7 @@ module ViennaRna
                     xlab = "#{x_label} (1-indexed)",
                     ylab = "#{y_label} (1-indexed)"
                   )
-                  title("#{title || 'Matrix Heatmap'}")
+                  title(#{expressionify(title || "Matrix Heatmap")})
                 STR
               end
             else
@@ -217,6 +218,10 @@ module ViennaRna
         
         def writing_file?(filename)
           filename && (filename = filename.end_with?(".pdf") ? filename : filename + ".pdf")
+        end
+        
+        def expressionify(string)
+          string.start_with?("expression") ? string : string.inspect
         end
       end
     end

@@ -43,6 +43,10 @@ module ViennaRna
         def gc_content
           seq.split(//).select { |i| i =~ /[GC]/i }.size.to_f / seq.size
         end
+        
+        def boltzmann_probability(dangle: 2)
+          Math.exp(-run(:eval, d: dangle).mfe / ViennaRna::RT) / Math.exp(-run(:fold, d: dangle, p: 0).ensemble_energy / ViennaRna::RT)
+        end
       end
     
       module OneStructureBasedMethods
