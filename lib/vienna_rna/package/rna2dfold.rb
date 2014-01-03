@@ -3,8 +3,8 @@ module ViennaRna
     class Rna2dfold < EnergyGrid2d
       self.default_flags = {
         d:         0,
-        p:         :empty,
-        "-noBT" => :empty
+        p:         true,
+        "-noBT" => true
       }
 
       self.executable_name = "RNA2Dfold"
