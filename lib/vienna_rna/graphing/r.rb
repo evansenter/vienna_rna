@@ -79,7 +79,7 @@ module ViennaRna
         end
         
         def scatterplot(data, title: nil, x_label: "Independent", y_label: "Dependent", filename: false)
-          line_graph(data, title: title, type: ?p, x_label: x_label, y_label: y_label, filename: filename)
+          line_graph(data, title: title || "Scatterplot", type: ?p, x_label: x_label, y_label: y_label, filename: filename)
         end
         
         def roc(data, title: nil, baseline: true, filename: false)
@@ -221,7 +221,7 @@ module ViennaRna
         end
         
         def expressionify(string)
-          string.start_with?("expression") ? string : string.inspect
+          %w|expression paste|.any?(&string.method(:start_with?)) ? string : string.inspect
         end
       end
     end

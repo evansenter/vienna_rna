@@ -4,14 +4,15 @@ module ViennaRna
       include RnaExtensions
     
       attr_accessor :comment
-      attr_reader :sequence, :structure, :second_structure, :raw_data
+      attr_reader :sequence, :structure, :second_structure
       
       class << self
-        def init_from_string(sequence, structure = nil, second_structure = nil)
+        def init_from_string(sequence, structure = nil, second_structure = nil, comment = nil)
           new(
             sequence:         sequence, 
             structure:        structure, 
-            second_structure: second_structure
+            second_structure: second_structure,
+            comment:          comment
           )
         end
     
@@ -20,8 +21,7 @@ module ViennaRna
             sequence:         hash[:sequence]         || hash[:seq], 
             structure:        hash[:structure]        || hash[:str_1] || hash[:str], 
             second_structure: hash[:second_structure] || hash[:str_2], 
-            comment:          hash[:comment]          || hash[:name], 
-            raw_data:         hash
+            comment:          hash[:comment]          || hash[:name]
           )
         end
       
@@ -50,16 +50,15 @@ module ViennaRna
             sequence:         rna.sequence, 
             strucutre:        rna.structure, 
             second_strucutre: rna.second_structure, 
-            comment:          rna.comment, 
-            raw_data:         rna.raw_data
+            comment:          rna.comment
           )
         end
       
         alias_method :placeholder, :new
       end
     
-      def initialize(sequence: "", structure: "", second_structure: "", comment: "", raw_data: {})
-        @sequence, @comment, @raw_data = sequence.kind_of?(Rna) ? sequence.seq : sequence, comment, raw_data
+      def initialize(sequence: "", structure: "", second_structure: "", comment: "")
+        @sequence, @comment = sequence.kind_of?(Rna) ? sequence.seq : sequence, comment
       
         [:structure, :second_structure].each do |structure_symbol|
           instance_variable_set(
@@ -96,8 +95,20 @@ module ViennaRna
       def empty_structure
         "." * seq.length
       end
-
+      
       alias :empty_str :empty_structure
+      
+      def one_structure(structure_1)
+        self.class.init_from_string(seq, structure_1.is_a?(Symbol) ? send(structure_1) : structure_1, nil, name)
+      end
+      
+      def two_structures(structure_1, structure_2)
+        self.class.init_from_string(
+          seq, 
+          *[structure_1, structure_2].map { |argument| argument.is_a?(Symbol) ? send(argument) : argument },
+          name
+        )
+      end
     
       def write_fa!(filename)
         filename.tap do |filename|
@@ -116,6 +127,12 @@ module ViennaRna
 
       def run(package_name, options = {})
         ViennaRna::Package.lookup(package_name).run(self, options)
+      end
+      
+      def method_missing(name, *args, &block)
+        if (name_str = "#{name}") =~ /^run_\w+$/
+          run(name_str.gsub(/^run_/, ""), *args)
+        else super end
       end
 
       def inspect

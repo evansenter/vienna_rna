@@ -63,6 +63,10 @@ unless defined? RNA
 end
 
 module RNA
+  def self.load_all(pattern: "*.fa")
+    Dir[pattern].map { |file| RNA.from_fasta(file) }
+  end
+  
   def self.random(size, *args)
     RNA.from_array(args.unshift(ViennaRna::Global::Rna.generate_sequence(size).seq))
   end
