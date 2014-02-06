@@ -1,6 +1,8 @@
 ViennaRna
 ------------------------
 
+[![Gem Version](https://badge.fury.io/rb/vienna_rna.png)](http://badge.fury.io/rb/vienna_rna)
+
 A simple gem for facilitating bindings to the ViennaRNA package (http://www.tbi.univie.ac.at/~ivo/RNA/), amongst other RNA packages. Note that this gem makes no effort to build and install the ViennaRNA suite locally at this time, and instead relies on its presence on the host machine. Also includes a lot of utilities surrounding RNA sequence / structure parsing, graphing using R (via RinRuby) and other analysis tools. Used privately as the foundation for much of the research I do at http://bioinformatics.bc.edu/clotelab/
 
 Simple use case:
