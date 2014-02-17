@@ -63,8 +63,8 @@ unless defined? RNA
 end
 
 module RNA
-  def self.load_all(pattern: "*.fa")
-    Dir[pattern].map { |file| RNA.from_fasta(file) }
+  def self.load_all(pattern = "*.fa")
+    Dir[File.directory?(pattern) ? pattern + "/*.fa" : pattern].map { |file| RNA.from_fasta(file) }
   end
   
   def self.random(size, *args)
