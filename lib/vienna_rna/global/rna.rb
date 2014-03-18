@@ -140,7 +140,7 @@ module ViennaRna
           ("#{seq[0, 20]   + (seq.length > 20   ? '... [%d]' % seq.length : '')}" if seq   && !seq.empty?),
           ("#{str_1[0, 20] + (str_1.length > 20 ? ' [%d]'    % seq.length : '')}" if str_1 && !str_1.empty?),
           ("#{str_2[0, 20] + (str_2.length > 20 ? ' [%d]'    % seq.length : '')}" if str_2 && !str_1.empty?),
-          (!name.empty? ? name : "#{self.class.name}")
+          (name ? name : "#{self.class.name}")
         ].compact.join(", ")
       end
     end
