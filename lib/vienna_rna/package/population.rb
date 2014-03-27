@@ -1,7 +1,9 @@
 module ViennaRna
   module Package
     class Population < Base
-      attr_reader :population_proportion_str_2_from_str_1, :population_proportion_for_str_1
+      THREE_COLUMN_REGEX = /^([+-]\d+\.\d+\t){2}[+-]\d+\.\d+$/
+
+      attr_reader :str_1_to_str_2, :str_1_to_str_1
 
       self.default_flags = ->(context, flags) do
         {
@@ -15,7 +17,7 @@ module ViennaRna
       end
       self.quote_flag_params = %w|-fftbor2d-i -fftbor2d-j -fftbor2d-k|
 
-      class Population
+      class PopulationProportion
         include Enumerable
 
         attr_reader :proportion_over_time
@@ -33,10 +35,13 @@ module ViennaRna
           stop        = proportion_points.last
           sign        = stop > start ? :increasing : :decreasing
           # If the population is increasing over time, we want the 95%, otherwise we want the 5%
-          percentile  = ((start.zero? || stop.zero? ? [start, stop].max : (stop / start).abs) / 100) * (sign == :increasing ? percentile : 100 - percentile)
+          spread_100  = (start.zero? || stop.zero? ? [start, stop].max : (stop / start).abs) / 100
           # Look for the first index at the percentile we're interested in, and scan to the right from there.
           start_index = proportion_points.each_with_index.find do |proportion, i|
-            sign == :increasing ? proportion > percentile : proportion < percentile
+            case sign
+            when :increasing then proportion > (stop - (spread_100 * (100 - percentile)))
+            when :decreasing then proportion < (stop + (spread_100 * (100 - percentile)))
+            end
           end.last
 
           # The first slice starting at x we find where abs(p(x + i), p(x)) < epslion for all 1 <= x < window_size is equilibrium,
@@ -52,6 +57,15 @@ module ViennaRna
         def each
           proportion_over_time.each { |_| yield _ }
         end
+
+        def inspect
+          "#<ViennaRna::Package::Population::PopulationProportion time: (%f..%f), proportion: (%f..%f)>" % [
+            time_points[0],
+            time_points[-1],
+            proportion_points[0],
+            proportion_points[-1],
+          ]
+        end
       end
 
       def run_command(flags)
@@ -61,9 +75,9 @@ module ViennaRna
       end
 
       def post_process
-        time_points, proportion_str_2_from_str_1, proportion_for_str_1 = response.split(/\n/).map { |line| line.split(/\t/).map(&:to_f) }.transpose
-        @population_proportion_str_2_from_str_1                        = Population.new(time_points, proportion_str_2_from_str_1)
-        @population_proportion_for_str_1                               = Population.new(time_points, proportion_for_str_1)
+        time_points, str_1_to_str_2, str_1_to_str_1 = response.split(/\n/).select { |line| line =~ THREE_COLUMN_REGEX }.map { |line| line.split(/\t/).map(&:to_f) }.transpose
+        @str_1_to_str_2 = PopulationProportion.new(time_points, str_1_to_str_2)
+        @str_1_to_str_1 = PopulationProportion.new(time_points, str_1_to_str_1)
       end
     end
   end
