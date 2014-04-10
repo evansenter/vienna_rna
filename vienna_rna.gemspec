@@ -10,7 +10,9 @@ Gem::Specification.new do |spec|
   spec.homepage    = "http://rubygems.org/gems/vienna_rna"
 
   spec.add_runtime_dependency("activesupport", "~> 4.0")
-  spec.add_runtime_dependency("shuffle",       "~> 0.1", ">= 0.1.0")
-  spec.add_runtime_dependency("rinruby",       "~> 2.0", ">= 2.0.3")
-  spec.add_runtime_dependency("rroc",          "~> 0.1", ">= 0.1.1")
+  spec.add_runtime_dependency("shuffle",       "~> 0.1")
+  spec.add_runtime_dependency("rinruby",       "~> 2.0")
+  spec.add_runtime_dependency("rroc",          "~> 0.1")
+
+  spec.post_install_message = "DEPRECATED: The vienna_rna gem has been deprecated and has been replaced by wrnap."
 end
